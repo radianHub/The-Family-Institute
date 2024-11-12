@@ -1,4 +1,4 @@
-public with sharing class DonationSelectionController {
+public without sharing class DonationSelectionController {
 
     @AuraEnabled(cacheable=true)
     public static List<Donation_Amount__mdt> getDonationAmounts() {

@@ -34,7 +34,7 @@ export default class DonationSelection extends LightningElement {
 		this.getProcessingFee();
 		this.getSettings();
 		this.getDonationAmounts();
-		this.campaignId = this.currentPageReference.state.c__campaign;
+		this.campaignId = this.currentPageReference.state.c__campaign; // Need to verify if this applies to this donation form
 	}
 
 	renderedCallback() {
@@ -210,6 +210,8 @@ export default class DonationSelection extends LightningElement {
 		}
 
 		const body = new URLSearchParams(Object.entries(params)).toString();
+		console.log('Body: ', body);
+
 		const token = this.settings.Stripe_API_Key__c;
 
 		const fetchClientSecret = async () => {

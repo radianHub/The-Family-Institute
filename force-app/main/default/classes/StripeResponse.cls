@@ -209,6 +209,12 @@ public class StripeResponse {
 		public String campaignId;
 		public String recurrence;
 		public String anonymous;
+		public Boolean addFee;
+		public Decimal coverFeeAmount;
+		public Decimal processorFeeAmount;
+		public String tributeType;
+		public Integer intervalCount;
+		public String giftType;
 	}
 	public class cls_rendering_options {
 		public String amount_tax_display;
