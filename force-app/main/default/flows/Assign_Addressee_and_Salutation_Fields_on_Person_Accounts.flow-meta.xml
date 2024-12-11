@@ -355,7 +355,11 @@
     <formulas>
         <name>combinedSalutation</name>
         <dataType>String</dataType>
-        <expression>IF(
+        <expression>IF( OR(TEXT({!account.Salutation}) = &apos;&apos;,  TEXT({!contactAccount.Salutation}) = &apos;&apos; ) ,
+{!combinedAddressee}
+,
+
+IF(
 OR({!account.LastName} &lt;&gt; {!contactAccount.LastName},TEXT({!account.Salutation}) = &quot;Dr.&quot; ,TEXT({!account.Salutation}) = &quot;Prof.&quot;,TEXT({!contactAccount.Salutation}) = &quot;Dr.&quot; ,TEXT({!contactAccount.Salutation}) = &quot;Prof.&quot;), 
 
 TEXT({!account.Salutation}) + &apos; &apos; + {!accountName} + &apos; and &apos; +  TEXT({!contactAccount.Salutation}) + &apos; &apos; + {!contactAccountName} 
@@ -365,6 +369,7 @@ TEXT({!account.Salutation}) + &apos; &apos; + {!accountName} + &apos; and &apos;
 TEXT({!account.Salutation}) + &apos; and &apos; + TEXT({!contactAccount.Salutation}) + &apos; &apos; +  {!account.FirstName} + &apos; and &apos;  +
  {!contactAccount.FirstName}+ &apos; &apos; + {!account.LastName}
 
+)
 )</expression>
     </formulas>
     <formulas>
