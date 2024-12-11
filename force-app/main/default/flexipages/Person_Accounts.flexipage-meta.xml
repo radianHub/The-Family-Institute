@@ -67,8 +67,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.PersonTitle</fieldItem>
-                <identifier>RecordPersonTitleField</identifier>
+                <fieldItem>Record.Addressee__c</fieldItem>
+                <identifier>RecordAddressee_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -77,8 +77,28 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.PersonEmail</fieldItem>
-                <identifier>RecordPersonEmailField</identifier>
+                <fieldItem>Record.Salutation__c</fieldItem>
+                <identifier>RecordSalutation_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Type</fieldItem>
+                <identifier>RecordTypeField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.PersonTitle</fieldItem>
+                <identifier>RecordPersonTitleField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -95,6 +115,16 @@
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.PersonEmail</fieldItem>
+                <identifier>RecordPersonEmailField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
