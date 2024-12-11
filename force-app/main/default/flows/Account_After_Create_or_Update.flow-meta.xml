@@ -84,8 +84,8 @@
         </rules>
     </decisions>
     <environments>Default</environments>
-    <interviewLabel>Account After Update {!$Flow.CurrentDateTime}</interviewLabel>
-    <label>Account After Update</label>
+    <interviewLabel>Account After Create or Update {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Account After Create or Update</label>
     <loops>
         <name>Loop_Through_Relationships</name>
         <label>Loop Through Relationships</label>
@@ -160,33 +160,11 @@
         <connector>
             <targetReference>Get_Spouse_Record</targetReference>
         </connector>
-        <filterLogic>or</filterLogic>
-        <filters>
-            <field>LastName</field>
-            <operator>IsChanged</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <filters>
-            <field>FirstName</field>
-            <operator>IsChanged</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <filters>
-            <field>Salutation</field>
-            <operator>IsChanged</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
         <object>Account</object>
-        <recordTriggerType>Update</recordTriggerType>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
-    <status>Obsolete</status>
+    <status>Active</status>
     <subflows>
         <name>Assign_Addressee_and_Salutation_Fields_on_Person_Accounts_Flow_1</name>
         <label>Assign Addressee and Salutation Fields on Person Accounts Flow 1</label>
