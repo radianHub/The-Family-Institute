@@ -5,7 +5,7 @@
         <name>Add_Record_to_Collection</name>
         <label>Add Record to Collection</label>
         <locationX>50</locationX>
-        <locationY>1031</locationY>
+        <locationY>1139</locationY>
         <assignmentItems>
             <assignToReference>accounts</assignToReference>
             <operator>Add</operator>
@@ -21,7 +21,7 @@
         <name>Assign_to_True</name>
         <label>Assign to True</label>
         <locationX>270</locationX>
-        <locationY>647</locationY>
+        <locationY>755</locationY>
         <assignmentItems>
             <assignToReference>containsSpouse</assignToReference>
             <operator>Assign</operator>
@@ -37,7 +37,7 @@
         <name>Does_Record_Contain_Spouse_Role</name>
         <label>Does Record Contain Spouse Role?</label>
         <locationX>402</locationX>
-        <locationY>539</locationY>
+        <locationY>647</locationY>
         <defaultConnector>
             <targetReference>Loop_Through_Relationships</targetReference>
         </defaultConnector>
@@ -59,10 +59,32 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Record_Type</name>
+        <label>Record Type?</label>
+        <locationX>380</locationX>
+        <locationY>323</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Person_Account</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>PersonAccount</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Spouse_Record</targetReference>
+            </connector>
+            <label>Person Account</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Spouse_Relationships</name>
         <label>Spouse Relationships?</label>
         <locationX>182</locationX>
-        <locationY>923</locationY>
+        <locationY>1031</locationY>
         <defaultConnector>
             <targetReference>Assign_Addressee_and_Salutation_Fields_on_Person_Accounts_Flow_2</targetReference>
         </defaultConnector>
@@ -90,7 +112,7 @@
         <name>Loop_Through_Relationships</name>
         <label>Loop Through Relationships</label>
         <locationX>182</locationX>
-        <locationY>431</locationY>
+        <locationY>539</locationY>
         <collectionReference>Get_Spouse_Record</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
@@ -123,7 +145,7 @@
         <name>Get_Spouse_Record</name>
         <label>Get Spouse Record</label>
         <locationX>182</locationX>
-        <locationY>323</locationY>
+        <locationY>431</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Loop_Through_Relationships</targetReference>
@@ -155,10 +177,10 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <start>
-        <locationX>56</locationX>
+        <locationX>254</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Get_Spouse_Record</targetReference>
+            <targetReference>Record_Type</targetReference>
         </connector>
         <object>Account</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
@@ -169,7 +191,7 @@
         <name>Assign_Addressee_and_Salutation_Fields_on_Person_Accounts_Flow_1</name>
         <label>Assign Addressee and Salutation Fields on Person Accounts Flow 1</label>
         <locationX>50</locationX>
-        <locationY>1139</locationY>
+        <locationY>1247</locationY>
         <flowName>Assign_Addressee_and_Salutation_Fields_on_Person_Accounts</flowName>
         <inputAssignments>
             <name>accountIsChanged</name>
@@ -188,7 +210,7 @@
         <name>Assign_Addressee_and_Salutation_Fields_on_Person_Accounts_Flow_2</name>
         <label>Assign Addressee and Salutation Fields on Person Accounts Flow 2</label>
         <locationX>314</locationX>
-        <locationY>1031</locationY>
+        <locationY>1139</locationY>
         <flowName>Assign_Addressee_and_Salutation_Fields_on_Person_Accounts</flowName>
         <inputAssignments>
             <name>relationshipRecords</name>
