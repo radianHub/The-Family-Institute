@@ -14,7 +14,7 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Assign_Addressee_and_Salutation_Fields_on_Person_Accounts_Flow_1</targetReference>
+            <targetReference>Assign_Addressee_and_Salutation_Fields_on_Organization_Accounts_Flow_1</targetReference>
         </connector>
     </assignments>
     <environments>Default</environments>
@@ -47,10 +47,10 @@
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
-            <field>Roles</field>
-            <operator>Contains</operator>
+            <field>IsPrimaryMember</field>
+            <operator>EqualTo</operator>
             <value>
-                <stringValue>Spouse</stringValue>
+                <booleanValue>true</booleanValue>
             </value>
         </filters>
         <object>AccountContactRelation</object>
@@ -59,11 +59,11 @@
     </start>
     <status>Active</status>
     <subflows>
-        <name>Assign_Addressee_and_Salutation_Fields_on_Person_Accounts_Flow_1</name>
-        <label>Assign Addressee and Salutation Fields on Person Accounts Flow 1</label>
+        <name>Assign_Addressee_and_Salutation_Fields_on_Organization_Accounts_Flow_1</name>
+        <label>Assign Addressee and Salutation Fields on Organization Accounts Flow 1</label>
         <locationX>176</locationX>
         <locationY>395</locationY>
-        <flowName>Assign_Addressee_and_Salutation_Fields_on_Person_Accounts</flowName>
+        <flowName>Assign_Addressee_and_Salutation_Fields_on_Organization_Accounts</flowName>
         <inputAssignments>
             <name>isDeleted</name>
             <value>
