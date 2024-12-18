@@ -4,24 +4,17 @@
     <assignments>
         <name>Add_Account_Ids_to_Collection</name>
         <label>Add Account Ids to Collection</label>
-        <locationX>1194</locationX>
-        <locationY>350</locationY>
+        <locationX>1634</locationX>
+        <locationY>458</locationY>
         <assignmentItems>
             <assignToReference>accountIds</assignToReference>
             <operator>Add</operator>
             <value>
-                <elementReference>Get_Account_Ids.Account.Id</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>accountIds</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>Get_Account_Ids.Contact.Account.Id</elementReference>
+                <elementReference>Get_Account_Ids.Contact.AccountId</elementReference>
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Get_Account_Ids</targetReference>
+            <targetReference>Is_Related_Contact_Id_Already_Populated</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -43,8 +36,8 @@
     <assignments>
         <name>Add_Account_Records_to_Collection_Variable</name>
         <label>Add Account Records to Collection Variable</label>
-        <locationX>1546</locationX>
-        <locationY>1658</locationY>
+        <locationX>1810</locationX>
+        <locationY>2150</locationY>
         <assignmentItems>
             <assignToReference>accountsToUpdate</assignToReference>
             <operator>Add</operator>
@@ -61,6 +54,22 @@
         </assignmentItems>
         <connector>
             <targetReference>For_Each_Relationship_Record</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Add_Related_Contact_Account_Id_to_Collection</name>
+        <label>Add Related Contact Account Id to Collection</label>
+        <locationX>1634</locationX>
+        <locationY>758</locationY>
+        <assignmentItems>
+            <assignToReference>accountIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Get_Account_Ids.RelatedContact.AccountId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_Account_Ids</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -82,8 +91,8 @@
     <assignments>
         <name>Assign_Account</name>
         <label>Assign Account</label>
-        <locationX>1634</locationX>
-        <locationY>1082</locationY>
+        <locationX>1898</locationX>
+        <locationY>1574</locationY>
         <assignmentItems>
             <assignToReference>account</assignToReference>
             <operator>Assign</operator>
@@ -114,8 +123,8 @@
     <assignments>
         <name>Assign_Contact_Account</name>
         <label>Assign Contact Account</label>
-        <locationX>1898</locationX>
-        <locationY>1082</locationY>
+        <locationX>2162</locationX>
+        <locationY>1574</locationY>
         <assignmentItems>
             <assignToReference>contactAccount</assignToReference>
             <operator>Assign</operator>
@@ -153,8 +162,8 @@
     <assignments>
         <name>Update_Addressee_and_Salutation_Fields</name>
         <label>Update Addressee and Salutation Fields</label>
-        <locationX>1414</locationX>
-        <locationY>1466</locationY>
+        <locationX>1678</locationX>
+        <locationY>1958</locationY>
         <assignmentItems>
             <assignToReference>contactAccount.Addressee__c</assignToReference>
             <operator>Assign</operator>
@@ -190,8 +199,8 @@
     <assignments>
         <name>Update_Joined_Addressee_and_Salutation_Fields</name>
         <label>Update Joined Addressee and Salutation Fields</label>
-        <locationX>1678</locationX>
-        <locationY>1466</locationY>
+        <locationX>1942</locationX>
+        <locationY>1958</locationY>
         <assignmentItems>
             <assignToReference>contactAccount.Addressee__c</assignToReference>
             <operator>Assign</operator>
@@ -228,8 +237,8 @@
         <name>Filter_Accounts_to_Get_From_Current_Relationship</name>
         <elementSubtype>FilterCollectionProcessor</elementSubtype>
         <label>Filter Accounts to Get From Current Relationship</label>
-        <locationX>1546</locationX>
-        <locationY>758</locationY>
+        <locationX>1810</locationX>
+        <locationY>1250</locationY>
         <assignNextValueToReference>currentItem_Filter_Accounts_to_Get_From_Current_Relationship</assignNextValueToReference>
         <collectionProcessorType>FilterCollectionProcessor</collectionProcessorType>
         <collectionReference>Get_Accounts</collectionReference>
@@ -238,14 +247,14 @@
             <leftValueReference>currentItem_Filter_Accounts_to_Get_From_Current_Relationship.Id</leftValueReference>
             <operator>EqualTo</operator>
             <rightValue>
-                <elementReference>For_Each_Relationship_Record.AccountId</elementReference>
+                <elementReference>For_Each_Relationship_Record.Contact.AccountId</elementReference>
             </rightValue>
         </conditions>
         <conditions>
             <leftValueReference>currentItem_Filter_Accounts_to_Get_From_Current_Relationship.Id</leftValueReference>
             <operator>EqualTo</operator>
             <rightValue>
-                <elementReference>For_Each_Relationship_Record.Contact.Account.Id</elementReference>
+                <elementReference>For_Each_Relationship_Record.RelatedContact.AccountId</elementReference>
             </rightValue>
         </conditions>
         <connector>
@@ -253,9 +262,34 @@
         </connector>
     </collectionProcessors>
     <decisions>
+        <name>Account_Id_Already_In_Collection</name>
+        <label>Account Id Already In Collection?</label>
+        <locationX>1546</locationX>
+        <locationY>350</locationY>
+        <defaultConnector>
+            <targetReference>Add_Account_Ids_to_Collection</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Id_Populated</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>accountIds</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <elementReference>Get_Account_Ids.Contact.AccountId</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Is_Related_Contact_Id_Already_Populated</targetReference>
+            </connector>
+            <label>Id Populated</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Account_Was_Changed</name>
         <label>Account Was Changed?</label>
-        <locationX>578</locationX>
+        <locationX>710</locationX>
         <locationY>134</locationY>
         <defaultConnector>
             <targetReference>Get_Account_Ids</targetReference>
@@ -280,8 +314,8 @@
     <decisions>
         <name>Is_Deleted</name>
         <label>Is Deleted?</label>
-        <locationX>1546</locationX>
-        <locationY>1358</locationY>
+        <locationX>1810</locationX>
+        <locationY>1850</locationY>
         <defaultConnector>
             <targetReference>Update_Joined_Addressee_and_Salutation_Fields</targetReference>
         </defaultConnector>
@@ -303,10 +337,35 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Is_Related_Contact_Id_Already_Populated</name>
+        <label>Is Related Contact Id Already Populated?</label>
+        <locationX>1546</locationX>
+        <locationY>650</locationY>
+        <defaultConnector>
+            <targetReference>Add_Related_Contact_Account_Id_to_Collection</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Related_is_Populated</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>accountIds</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <elementReference>Get_Account_Ids.RelatedContact.AccountId</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Account_Ids</targetReference>
+            </connector>
+            <label>Related is Populated</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Match</name>
         <label>Match?</label>
-        <locationX>1766</locationX>
-        <locationY>974</locationY>
+        <locationX>2030</locationX>
+        <locationY>1466</locationY>
         <defaultConnector>
             <targetReference>Assign_Contact_Account</targetReference>
         </defaultConnector>
@@ -318,7 +377,7 @@
                 <leftValueReference>For_Each_Account.Id</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <elementReference>For_Each_Relationship_Record.AccountId</elementReference>
+                    <elementReference>For_Each_Relationship_Record.Contact.AccountId</elementReference>
                 </rightValue>
             </conditions>
             <connector>
@@ -331,7 +390,7 @@
     <formulas>
         <name>accountAddressee</name>
         <dataType>String</dataType>
-        <expression>{!account.FirstName} + &apos; &apos; + {!account.LastName}</expression>
+        <expression>TEXT({!account.Salutation}) + &apos; &apos; + {!accountSalutation}</expression>
     </formulas>
     <formulas>
         <name>accountName</name>
@@ -341,22 +400,13 @@
     <formulas>
         <name>accountSalutation</name>
         <dataType>String</dataType>
-        <expression>TEXT({!account.Salutation}) + &apos; &apos; + {!accountAddressee}</expression>
+        <expression>{!account.FirstName} + &apos; &apos; + {!account.LastName}</expression>
     </formulas>
     <formulas>
         <name>combinedAddressee</name>
         <dataType>String</dataType>
-        <expression>IF({!account.LastName} = {!contactAccount.LastName}, 
-
-{!account.FirstName} + &apos; and &apos;  + {!contactAccount.FirstName}+ &apos; &apos; + {!account.LastName}, 
-
-{!accountName} + &apos; and &apos; +  {!contactAccountName} )</expression>
-    </formulas>
-    <formulas>
-        <name>combinedSalutation</name>
-        <dataType>String</dataType>
         <expression>IF( OR(TEXT({!account.Salutation}) = &apos;&apos;,  TEXT({!contactAccount.Salutation}) = &apos;&apos; ) ,
-{!combinedAddressee}
+{!combinedSalutation}
 ,
 
 IF(
@@ -373,6 +423,15 @@ TEXT({!account.Salutation}) + &apos; and &apos; + TEXT({!contactAccount.Salutati
 )</expression>
     </formulas>
     <formulas>
+        <name>combinedSalutation</name>
+        <dataType>String</dataType>
+        <expression>IF({!account.LastName} = {!contactAccount.LastName}, 
+
+{!account.FirstName} + &apos; and &apos;  + {!contactAccount.FirstName}+ &apos; &apos; + {!account.LastName}, 
+
+{!accountName} + &apos; and &apos; +  {!contactAccountName} )</expression>
+    </formulas>
+    <formulas>
         <name>contactAccountName</name>
         <dataType>String</dataType>
         <expression>{!contactAccount.FirstName} + &apos; &apos; +  {!contactAccount.LastName}</expression>
@@ -380,20 +439,20 @@ TEXT({!account.Salutation}) + &apos; and &apos; + TEXT({!contactAccount.Salutati
     <formulas>
         <name>contactAddressee</name>
         <dataType>String</dataType>
-        <expression>{!contactAccount.FirstName} + &apos; &apos; + {!contactAccount.LastName}</expression>
+        <expression>TEXT({!contactAccount.Salutation}) + &apos; &apos; + {!contactSalutation}</expression>
     </formulas>
     <formulas>
         <name>contactSalutation</name>
         <dataType>String</dataType>
-        <expression>TEXT({!contactAccount.Salutation}) + &apos; &apos; + {!contactAddressee}</expression>
+        <expression>{!contactAccount.FirstName} + &apos; &apos; + {!contactAccount.LastName}</expression>
     </formulas>
     <interviewLabel>Assign Addressee and Salutation Fields on Person Accounts {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Assign Addressee and Salutation Fields on Person Accounts</label>
     <loops>
         <name>For_Each_Account</name>
         <label>For Each Account</label>
-        <locationX>1546</locationX>
-        <locationY>866</locationY>
+        <locationX>1810</locationX>
+        <locationY>1358</locationY>
         <collectionReference>Filter_Accounts_to_Get_From_Current_Relationship</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
@@ -420,9 +479,9 @@ TEXT({!account.Salutation}) + &apos; and &apos; + TEXT({!contactAccount.Salutati
     <loops>
         <name>For_Each_Relationship_Record</name>
         <label>For Each Relationship Record</label>
-        <locationX>1106</locationX>
-        <locationY>650</locationY>
-        <collectionReference>relationshipRecords</collectionReference>
+        <locationX>1370</locationX>
+        <locationY>1142</locationY>
+        <collectionReference>contactContactCollection</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
             <targetReference>Filter_Accounts_to_Get_From_Current_Relationship</targetReference>
@@ -434,12 +493,12 @@ TEXT({!account.Salutation}) + &apos; and &apos; + TEXT({!contactAccount.Salutati
     <loops>
         <name>Get_Account_Ids</name>
         <label>Get Account Ids</label>
-        <locationX>1106</locationX>
+        <locationX>1370</locationX>
         <locationY>242</locationY>
-        <collectionReference>relationshipRecords</collectionReference>
+        <collectionReference>contactContactCollection</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
-            <targetReference>Add_Account_Ids_to_Collection</targetReference>
+            <targetReference>Account_Id_Already_In_Collection</targetReference>
         </nextValueConnector>
         <noMoreValuesConnector>
             <targetReference>Get_Accounts</targetReference>
@@ -478,15 +537,39 @@ TEXT({!account.Salutation}) + &apos; and &apos; + TEXT({!contactAccount.Salutati
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>Create_Error_Log</name>
+        <label>Create Error Log</label>
+        <locationX>1898</locationX>
+        <locationY>2534</locationY>
+        <inputAssignments>
+            <field>Message__c</field>
+            <value>
+                <elementReference>errorMessage</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Source__c</field>
+            <value>
+                <stringValue>Flow</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Error_Log__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
     <recordLookups>
         <name>Get_Accounts</name>
         <label>Get Accounts</label>
-        <locationX>1106</locationX>
-        <locationY>542</locationY>
+        <locationX>1370</locationX>
+        <locationY>1034</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>For_Each_Relationship_Record</targetReference>
         </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Create_Error_Log</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -508,6 +591,10 @@ TEXT({!account.Salutation}) + &apos; and &apos; + TEXT({!contactAccount.Salutati
         <connector>
             <targetReference>For_Each_Old_Account</targetReference>
         </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Create_Error_Log</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -523,18 +610,28 @@ TEXT({!account.Salutation}) + &apos; and &apos; + TEXT({!contactAccount.Salutati
     <recordUpdates>
         <name>Update_Accounts</name>
         <label>Update Accounts</label>
-        <locationX>578</locationX>
-        <locationY>1934</locationY>
+        <locationX>710</locationX>
+        <locationY>2426</locationY>
+        <faultConnector>
+            <targetReference>Create_Error_Log</targetReference>
+        </faultConnector>
         <inputReference>accountsToUpdate</inputReference>
     </recordUpdates>
     <start>
-        <locationX>452</locationX>
+        <locationX>584</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>Account_Was_Changed</targetReference>
         </connector>
     </start>
     <status>Active</status>
+    <textTemplates>
+        <name>errorMessage</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>There was an issue with updating account addressee and salutation fields:
+
+{!$Flow.FaultMessage}</text>
+    </textTemplates>
     <variables>
         <name>account</name>
         <dataType>SObject</dataType>
@@ -572,6 +669,14 @@ TEXT({!account.Salutation}) + &apos; and &apos; + TEXT({!contactAccount.Salutati
         <isInput>false</isInput>
         <isOutput>false</isOutput>
         <objectType>Account</objectType>
+    </variables>
+    <variables>
+        <name>contactContactCollection</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ContactContactRelation</objectType>
     </variables>
     <variables>
         <name>currentItem_Filter_Accounts_to_Get_From_Current_Relationship</name>

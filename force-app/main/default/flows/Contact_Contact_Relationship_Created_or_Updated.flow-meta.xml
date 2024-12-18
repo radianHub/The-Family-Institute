@@ -7,14 +7,14 @@
         <locationX>50</locationX>
         <locationY>431</locationY>
         <assignmentItems>
-            <assignToReference>newRelationshipRecords</assignToReference>
+            <assignToReference>contactContactRelationship</assignToReference>
             <operator>Add</operator>
             <value>
                 <elementReference>$Record</elementReference>
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Assign_Addressee_and_Salutation_Fields_on_Organization_Accounts_Flow_2</targetReference>
+            <targetReference>Assign_Addressee_and_Salutation_Fields_on_Person_Accounts_Flow_1</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -23,25 +23,25 @@
         <locationX>314</locationX>
         <locationY>431</locationY>
         <assignmentItems>
-            <assignToReference>roleChangedRecords</assignToReference>
+            <assignToReference>contactContactRelationship</assignToReference>
             <operator>Add</operator>
             <value>
                 <elementReference>$Record</elementReference>
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Assign_Addressee_and_Salutation_Fields_on_Organization_Accounts_Flow_1</targetReference>
+            <targetReference>Assign_Addressee_and_Salutation_Fields_on_Person_Accounts_Flow_2</targetReference>
         </connector>
     </assignments>
     <decisions>
-        <name>Is_Relationship_a_Primary_Contact</name>
-        <label>Is Relationship a Primary Contact</label>
+        <name>Is_Relationship_a_Spouse_Relationship</name>
+        <label>Is Relationship a Spouse Relationship</label>
         <locationX>314</locationX>
         <locationY>323</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
-            <name>New_Primary_Contact</name>
-            <conditionLogic>(1 OR 3) AND 2</conditionLogic>
+            <name>New_Spouse_Relationship</name>
+            <conditionLogic>(1 AND 2) OR (2 AND 3)</conditionLogic>
             <conditions>
                 <leftValueReference>isNew</leftValueReference>
                 <operator>EqualTo</operator>
@@ -50,14 +50,14 @@
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>$Record.IsPrimaryMember</leftValueReference>
+                <leftValueReference>$Record.Is_Spouse_Relationship__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>$Record.IsPrimaryMember</leftValueReference>
+                <leftValueReference>$Record.Is_Spouse_Relationship__c</leftValueReference>
                 <operator>IsChanged</operator>
                 <rightValue>
                     <booleanValue>true</booleanValue>
@@ -66,10 +66,10 @@
             <connector>
                 <targetReference>Add_New_Relationship_to_Collection</targetReference>
             </connector>
-            <label>New Primary Contact</label>
+            <label>New Spouse Relationship</label>
         </rules>
         <rules>
-            <name>Previously_Primary_Contact</name>
+            <name>Previously_Spouse_Relationship</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>isNew</leftValueReference>
@@ -79,14 +79,14 @@
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>$Record.IsPrimaryMember</leftValueReference>
+                <leftValueReference>$Record.Is_Spouse_Relationship__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>$Record__Prior.IsPrimaryMember</leftValueReference>
+                <leftValueReference>$Record__Prior.Is_Spouse_Relationship__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <booleanValue>true</booleanValue>
@@ -95,7 +95,7 @@
             <connector>
                 <targetReference>Add_Relationship_Records_to_Changed_Variable</targetReference>
             </connector>
-            <label>Previously Primary Contact</label>
+            <label>Previously Spouse Relationship</label>
         </rules>
     </decisions>
     <environments>Default</environments>
@@ -104,13 +104,8 @@
         <dataType>Boolean</dataType>
         <expression>ISNEW()</expression>
     </formulas>
-    <formulas>
-        <name>rolesContainSpouse</name>
-        <dataType>Boolean</dataType>
-        <expression>INCLUDES({!$Record.Roles}, &quot;Spouse&quot;)</expression>
-    </formulas>
-    <interviewLabel>Account Contact Relationship Created or Updated {!$Flow.CurrentDateTime}</interviewLabel>
-    <label>Account Contact Relationship Created or Updated</label>
+    <interviewLabel>Contact Contact Relationship Created or Updated {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Contact Contact Relationship Created or Updated</label>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -134,42 +129,42 @@
         <locationX>188</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Is_Relationship_a_Primary_Contact</targetReference>
+            <targetReference>Is_Relationship_a_Spouse_Relationship</targetReference>
         </connector>
-        <object>AccountContactRelation</object>
+        <object>ContactContactRelation</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
     <status>Active</status>
     <subflows>
-        <name>Assign_Addressee_and_Salutation_Fields_on_Organization_Accounts_Flow_1</name>
-        <label>Assign Addressee and Salutation Fields on Organization Accounts Flow 1</label>
-        <locationX>314</locationX>
+        <name>Assign_Addressee_and_Salutation_Fields_on_Person_Accounts_Flow_1</name>
+        <label>Assign Addressee and Salutation Fields on Person Accounts Flow 1</label>
+        <locationX>50</locationX>
         <locationY>539</locationY>
-        <flowName>Assign_Addressee_and_Salutation_Fields_on_Organization_Accounts</flowName>
+        <flowName>Assign_Addressee_and_Salutation_Fields_on_Person_Accounts</flowName>
         <inputAssignments>
-            <name>isDeleted</name>
+            <name>contactContactCollection</name>
             <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>relationshipRecords</name>
-            <value>
-                <elementReference>roleChangedRecords</elementReference>
+                <elementReference>contactContactRelationship</elementReference>
             </value>
         </inputAssignments>
     </subflows>
     <subflows>
-        <name>Assign_Addressee_and_Salutation_Fields_on_Organization_Accounts_Flow_2</name>
-        <label>Assign Addressee and Salutation Fields on Organization Accounts Flow 2</label>
-        <locationX>50</locationX>
+        <name>Assign_Addressee_and_Salutation_Fields_on_Person_Accounts_Flow_2</name>
+        <label>Assign Addressee and Salutation Fields on Person Accounts Flow 2</label>
+        <locationX>314</locationX>
         <locationY>539</locationY>
-        <flowName>Assign_Addressee_and_Salutation_Fields_on_Organization_Accounts</flowName>
+        <flowName>Assign_Addressee_and_Salutation_Fields_on_Person_Accounts</flowName>
         <inputAssignments>
-            <name>relationshipRecords</name>
+            <name>contactContactCollection</name>
             <value>
-                <elementReference>newRelationshipRecords</elementReference>
+                <elementReference>contactContactRelationship</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>isDeleted</name>
+            <value>
+                <booleanValue>true</booleanValue>
             </value>
         </inputAssignments>
     </subflows>
@@ -182,14 +177,12 @@
         <objectType>AccountContactRelation</objectType>
     </variables>
     <variables>
-        <name>existingSpouse</name>
-        <dataType>Boolean</dataType>
-        <isCollection>false</isCollection>
+        <name>contactContactRelationship</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
         <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <value>
-            <booleanValue>false</booleanValue>
-        </value>
+        <isOutput>true</isOutput>
+        <objectType>ContactContactRelation</objectType>
     </variables>
     <variables>
         <name>newRelationshipRecords</name>

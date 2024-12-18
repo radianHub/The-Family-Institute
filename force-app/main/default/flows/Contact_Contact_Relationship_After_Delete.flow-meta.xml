@@ -7,19 +7,19 @@
         <locationX>176</locationX>
         <locationY>287</locationY>
         <assignmentItems>
-            <assignToReference>relationshipRecords</assignToReference>
+            <assignToReference>contactRelationshipCollection</assignToReference>
             <operator>Add</operator>
             <value>
                 <elementReference>$Record</elementReference>
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Assign_Addressee_and_Salutation_Fields_on_Organization_Accounts_Flow_1</targetReference>
+            <targetReference>Assign_Addressee_and_Salutation_Fields_on_Person_Accounts_Flow_1</targetReference>
         </connector>
     </assignments>
     <environments>Default</environments>
-    <interviewLabel>Account Contact Relationship After Delete {!$Flow.CurrentDateTime}</interviewLabel>
-    <label>Account Contact Relationship After Delete</label>
+    <interviewLabel>Contact Contact Relationship After Delete {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Contact Contact Relationship After Delete</label>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -47,36 +47,44 @@
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
-            <field>IsPrimaryMember</field>
+            <field>Is_Spouse_Relationship__c</field>
             <operator>EqualTo</operator>
             <value>
                 <booleanValue>true</booleanValue>
             </value>
         </filters>
-        <object>AccountContactRelation</object>
+        <object>ContactContactRelation</object>
         <recordTriggerType>Delete</recordTriggerType>
         <triggerType>RecordBeforeDelete</triggerType>
     </start>
     <status>Active</status>
     <subflows>
-        <name>Assign_Addressee_and_Salutation_Fields_on_Organization_Accounts_Flow_1</name>
-        <label>Assign Addressee and Salutation Fields on Organization Accounts Flow 1</label>
+        <name>Assign_Addressee_and_Salutation_Fields_on_Person_Accounts_Flow_1</name>
+        <label>Assign Addressee and Salutation Fields on Person Accounts Flow 1</label>
         <locationX>176</locationX>
         <locationY>395</locationY>
-        <flowName>Assign_Addressee_and_Salutation_Fields_on_Organization_Accounts</flowName>
+        <flowName>Assign_Addressee_and_Salutation_Fields_on_Person_Accounts</flowName>
+        <inputAssignments>
+            <name>contactContactCollection</name>
+            <value>
+                <elementReference>contactRelationshipCollection</elementReference>
+            </value>
+        </inputAssignments>
         <inputAssignments>
             <name>isDeleted</name>
             <value>
                 <booleanValue>true</booleanValue>
             </value>
         </inputAssignments>
-        <inputAssignments>
-            <name>relationshipRecords</name>
-            <value>
-                <elementReference>relationshipRecords</elementReference>
-            </value>
-        </inputAssignments>
     </subflows>
+    <variables>
+        <name>contactRelationshipCollection</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+        <objectType>ContactContactRelation</objectType>
+    </variables>
     <variables>
         <name>relationshipRecords</name>
         <dataType>SObject</dataType>
