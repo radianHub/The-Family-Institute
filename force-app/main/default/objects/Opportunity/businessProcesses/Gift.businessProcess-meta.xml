@@ -12,15 +12,19 @@
         <default>false</default>
     </values>
     <values>
-        <fullName>Negotiation%2FReview</fullName>
+        <fullName>Cultivation</fullName>
         <default>false</default>
     </values>
     <values>
-        <fullName>Prospecting</fullName>
+        <fullName>Identification</fullName>
         <default>false</default>
     </values>
     <values>
-        <fullName>Qualification</fullName>
+        <fullName>Solicitation</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Stewardship</fullName>
         <default>false</default>
     </values>
 </BusinessProcess>
