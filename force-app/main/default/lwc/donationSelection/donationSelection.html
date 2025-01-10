@@ -133,7 +133,9 @@
 						</lightning-input>
 					</div>
 					<!-- * EMPLOYER MATCHING OPTION -->
-					<div class="options">
+					<div
+						lwc:if={typeOnce}
+						class="options">
 						<lightning-input
 							class="info"
 							type="checkbox"
@@ -170,7 +172,7 @@
 						<lightning-input
 							class="info"
 							type="checkbox"
-							label="Make this give on behalf of an organization"
+							label="Make this gift on behalf of an organization"
 							name="organization"
 							checked={organization}
 							onchange={clickOrganizationCheckbox}>
