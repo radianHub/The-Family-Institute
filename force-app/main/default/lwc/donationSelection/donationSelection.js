@@ -565,7 +565,6 @@ export default class DonationSelection extends LightningElement {
 	}
 
 	get typeOnce() {
-		console.log(this.givingType);
 		return this.givingType === 'once';
 	}
 

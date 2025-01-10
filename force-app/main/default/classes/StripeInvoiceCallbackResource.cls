@@ -1,57 +1,68 @@
+/**
+ * @Class Name     : StripeInvoiceCallbackResource
+ * @Class Purpose  : Listens for a successful Stripe Invoice completion and processes the donation.
+ * @Author         : Zachary Csotya
+ * @Developed On   : 12/30/2024
+ * @Last Modified  : 12/30/2024
+ **/
 @RestResource(UrlMapping='/invoice')
 global without sharing class StripeInvoiceCallbackResource {
+	/**
+	 * @description Processes the incoming stripe invoice payload and creates/updates the necessary records.
+	 * @author Zachary Csotya | 12/30/2024
+	 **/
 	@HttpPost
 	global static void doPost() {
-		String d = RestContext.request.requestBody.toString();
+		Map<String, Object> responseMap = new Map<String, Object>();
+		String transactionId;
+		try {
+			// * Parse JSON, replacing reserved word 'object' and 'number'
+			String requestBody = RestContext.request.requestBody.toString().replace('object', 'objectz');
+			requestBody = requestBody.replaceFirst('number', 'inv_number');
+			StripeInvoiceResponse stripeResponse = (StripeInvoiceResponse) JSON.deserialize(
+				requestBody,
+				StripeInvoiceResponse.class
+			);
 
-		// * REFORMAT JSON
-		String formattedJSONString = d.replace('object', 'objectz');
-		formattedJSONString = formattedJSONString.replaceFirst('number', 'inv_number');
+			// * Retrieve transaction ID for logging
+			transactionId = stripeResponse.id;
+			System.debug('Processing transaction ID: ' + transactionId);
 
-		// * PARSE JSON RESPONSE
-		StripeInvoiceResponse res = (StripeInvoiceResponse) JSON.deserialize(
-			formattedJSONString,
-			StripeInvoiceResponse.class
-		);
+			// * Extract and process metadata (gift type, honoree, recurrence)
+			StripeInvoiceResponse.cls_metadata metadata = stripeResponse.data.objectz.metadata;
 
-		System.debug(formattedJSONString);
+			// * Update gift transactions with incoming invoice data
+			DonationRecordService donation = new DonationRecordService();
+			donation.handleIncomingInvoice(stripeResponse);
 
-		System.debug(res.data.objectz.subscription);
-		System.debug(res.data.objectz.id);
-
-		// * FETCH PLEDGED OPPORTUNITY TO ASSIGN INVOICE ID
-		// List<Opportunity> oppList = [
-		//     SELECT Id, Stripe_Transaction_Id__c, RecordTypeId
-		//     FROM Opportunity
-		//     WHERE npe03__Recurring_Donation__r.Stripe_Subscription_Id__c = :res.data.objectz.subscription AND Stripe_Transaction_Id__c = :res.data.objectz.id
-		// ];
-
-		System.debug('Donation:::');
-		// System.debug([SELECT Id FROM npe03__Recurring_Donation__c WHERE Stripe_Subscription_Id__c = :res.data.objectz.subscription]);
-
-		// if (oppList.size() == 0) {
-		//     Opportunity opp = [
-		//         SELECT Id, Stripe_Transaction_Id__c, RecordTypeId
-		//         FROM Opportunity
-		//         WHERE npe03__Recurring_Donation__r.Stripe_Subscription_Id__c = :res.data.objectz.subscription AND Stripe_Transaction_Id__c = null
-		//     ];
-		//     update opp;
-
-		//     // * MARK PAYMENT PAID
-		//     npe01__OppPayment__c pmnt = [
-		//         SELECT
-		//             Id,
-		//             npe01__Payment_Method__c,
-		//             npe01__Paid__c,
-		//             npe01__Payment_Date__c
-		//         FROM
-		//             npe01__OppPayment__c
-		//         WHERE
-		//             npe01__Opportunity__c = :opp.Id AND npe01__Paid__c = false
-		//     ];
-		//     pmnt.npe01__Paid__c = res.data.objectz.status == 'paid' ? true : false;
-		//     pmnt.npe01__Payment_Date__c = DateTime.newInstance(((Long) res.data.objectz.created) * 1000).date();
-		//     update pmnt;
-		// }
+			// * Respond with success
+			responseMap.put('success', true);
+			responseMap.put('message', 'Donation processed successfully.');
+			RestContext.response.responseBody = Blob.valueOf(System.JSON.serialize(responseMap));
+		} catch (DonationProcessingException ex) {
+			// * Handle known donation errors
+			responseMap.put('success', false);
+			responseMap.put('error', 'Donation processing error: ' + ex.getMessage());
+			System.debug(
+				'DonationProcessingException in StripeInvoiceCallbackResource (transaction ID: ' +
+					transactionId +
+					'): ' +
+					ex.getMessage()
+			);
+			RestContext.response.statusCode = 500;
+			RestContext.response.responseBody = Blob.valueOf(System.JSON.serialize(responseMap));
+		} catch (Exception e) {
+			// * Handle unknown errors
+			responseMap.put('success', false);
+			responseMap.put('error', 'Error in processing StripeInvoiceCallbackResource: ' + e.getMessage());
+			System.debug(
+				'Unexpected error in StripeInvoiceCallbackResource (transaction ID: ' +
+					transactionId +
+					'): ' +
+					e.getMessage()
+			);
+			RestContext.response.statusCode = 400;
+			RestContext.response.responseBody = Blob.valueOf(System.JSON.serialize(responseMap));
+		}
 	}
 }

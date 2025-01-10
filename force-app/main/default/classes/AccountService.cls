@@ -1,3 +1,10 @@
+/**
+ * @Class Name     : AccountService
+ * @Class Purpose  : Handles all database logic for Account records.
+ * @Author         : Zachary Csotya
+ * @Developed On   : 12/31/2024
+ * @Last Modified  : 12/31/2024
+ **/
 public without sharing class AccountService {
 	final static Id PERSON_ACCT_RT = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName()
 		.get('PersonAccount')
@@ -7,18 +14,24 @@ public without sharing class AccountService {
 		.get('Organization')
 		.getRecordTypeId();
 
+	/**
+	 * @description Retrieves the id of a person account by given email, if person not found creates a new person account record.
+	 * @author Zachary Csotya | 12/30/2024
+	 * @param StripeResponse.cls_customer_details customerDetails
+	 * @return Id
+	 **/
 	public Id getOrCreatePersonAccount(StripeResponse.cls_customer_details customerDetails) {
 		if (customerDetails == null || String.isBlank(customerDetails.email)) {
 			throw new DonationProcessingException('Customer details or email is null');
 		}
 
 		try {
-			// Query for existing account by email
+			// * Query for existing account by email
 			return [SELECT Id, Name FROM Account WHERE PersonEmail = :customerDetails.email LIMIT 1].Id;
 		} catch (Exception ex) {
 			System.debug('No existing account found, creating new.');
 
-			// Parse customer name into first and last names
+			// * Parse customer name into first and last names
 			String firstName, lastName;
 			try {
 				Map<String, String> nameParts = parseName(customerDetails.name);
@@ -28,7 +41,7 @@ public without sharing class AccountService {
 				throw new DonationProcessingException('Failed to parse customer name: ' + customerDetails.name, e);
 			}
 
-			// Create new person account
+			// * Create new person account
 			return parseRecordData(
 				new AccountData(
 					firstName,
@@ -53,6 +66,13 @@ public without sharing class AccountService {
 		}
 	}
 
+	/**
+	 * @description Retrieves the id of an organization account by given phone, if org not found creates a new org account record.
+	 * @author Zachary Csotya | 12/30/2024
+	 * @param StripeResponse.cls_customer_details customer
+	 * @param StripeResponse.cls_organization org
+	 * @return Map<String, Id>
+	 **/
 	public Map<String, Id> getOrCreateOrgAccount(
 		StripeResponse.cls_customer_details customer,
 		StripeResponse.cls_organization org
@@ -63,12 +83,12 @@ public without sharing class AccountService {
 
 		Id accId;
 		try {
-			// Query for existing account by email
+			// * Query for existing account by email
 			accId = [SELECT Id, Name FROM Account WHERE Phone = :org.orgInfo.Phone LIMIT 1].Id;
 		} catch (Exception accEx) {
 			System.debug('No existing account found, creating new.');
 
-			// Create new org account
+			// * Create new org account
 			accId = parseRecordData(
 				new AccountData(
 					null,
@@ -86,9 +106,11 @@ public without sharing class AccountService {
 			);
 		}
 
+		// * Get or create person account
 		Id personId = getOrCreatePersonAccount(customer);
 		Id conId = [SELECT Id FROM Contact WHERE AccountId = :personId].Id;
 		AccountContactRelation accConRelation;
+		// * Look for existing AccountContactRelation, if none exists creates new
 		try {
 			accConRelation = [SELECT Id FROM AccountContactRelation WHERE AccountId = :accId AND ContactId = :conId];
 		} catch (Exception ex) {
@@ -98,82 +120,104 @@ public without sharing class AccountService {
 		return new Map<String, Id>{ 'person' => personId, 'org' => accId };
 	}
 
-	public Id getOrCreateOrgAccount(StripeResponse.cls_customer_details customer, StripeResponse.cls_employer match) {
-		if (match.employerInfo == null || String.isBlank(match.employerInfo.employerName)) {
-			throw new DonationProcessingException('Employer details are null');
-		}
+	// ! This method is not used in the current implementation
+	/**
+	 * @description Retrieves the id of an organization account by given account name, if org not found creates a new org account record.
+	 * @author Zachary Csotya | 12/30/2024
+	 * @param StripeResponse.cls_customer_details customer
+	 * @param StripeResponse.cls_employer match
+	 * @return Id
+	 **/
+	// public Id getOrCreateOrgAccount(StripeResponse.cls_customer_details customer, StripeResponse.cls_employer match) {
+	// 	if (match.employerInfo == null || String.isBlank(match.employerInfo.employerName)) {
+	// 		throw new DonationProcessingException('Employer details are null');
+	// 	}
 
-		Id accId;
-		try {
-			// Query for existing account by email
-			accId = [SELECT Id, Name FROM Account WHERE Name = :match.employerInfo.employerName LIMIT 1].Id;
-		} catch (Exception accEx) {
-			System.debug('No existing account found, creating new.');
+	// 	Id accId;
+	// 	try {
+	// 		// Query for existing account by email
+	// 		accId = [SELECT Id, Name FROM Account WHERE Name = :match.employerInfo.employerName LIMIT 1].Id;
+	// 	} catch (Exception accEx) {
+	// 		System.debug('No existing account found, creating new.');
 
-			// Create new org account
-			accId = parseRecordData(
-				new AccountData(
-					null,
-					match.employerInfo.employerName,
-					null,
-					null,
-					null,
-					null,
-					null,
-					null,
-					null,
-					'Other'
-				),
-				false
-			);
-		}
+	// 		// Create new org account
+	// 		accId = parseRecordData(
+	// 			new AccountData(
+	// 				null,
+	// 				match.employerInfo.employerName,
+	// 				null,
+	// 				null,
+	// 				null,
+	// 				null,
+	// 				null,
+	// 				null,
+	// 				null,
+	// 				'Other'
+	// 			),
+	// 			false
+	// 		);
+	// 	}
 
-		Id personId = getOrCreatePersonAccount(customer);
-		Id conId = [SELECT Id FROM Contact WHERE AccountId = :personId].Id;
-		AccountContactRelation accConRelation;
-		try {
-			accConRelation = [SELECT Id FROM AccountContactRelation WHERE AccountId = :accId AND ContactId = :conId];
-		} catch (Exception ex) {
-			accConRelation = new AccountContactRelation(AccountId = accId, ContactId = conId);
-			insert accConRelation;
-		}
-		return accId;
-	}
+	// 	Id personId = getOrCreatePersonAccount(customer);
+	// 	Id conId = [SELECT Id FROM Contact WHERE AccountId = :personId].Id;
+	// 	AccountContactRelation accConRelation;
+	// 	try {
+	// 		accConRelation = [SELECT Id FROM AccountContactRelation WHERE AccountId = :accId AND ContactId = :conId];
+	// 	} catch (Exception ex) {
+	// 		accConRelation = new AccountContactRelation(AccountId = accId, ContactId = conId);
+	// 		insert accConRelation;
+	// 	}
+	// 	return accId;
+	// }
 
-	public Id getOrCreateHonoree(StripeResponse.cls_honoree honoree) {
-		if (honoree == null) {
-			return null;
-		}
+	// ! This method is not used in the current implementation
+	/**
+	 * @description Retrieves the id of an honoree person account by given email, if honoree not found creates a new person account record.
+	 * @author Zachary Csotya | 12/30/2024
+	 * @param StripeResponse.cls_honoree honoree
+	 * @return Id
+	 **/
+	// public Id getOrCreateHonoree(StripeResponse.cls_honoree honoree) {
+	// 	if (honoree == null) {
+	// 		return null;
+	// 	}
 
-		try {
-			return [
-				SELECT Id, Name
-				FROM Account
-				WHERE PersonEmail = :honoree.honoreeInfo.Email AND PersonEmail != NULL
-				LIMIT 1
-			]
-			.Id;
-		} catch (Exception ex) {
-			System.debug('No existing account found, creating new.');
+	// 	try {
+	// 		return [
+	// 			SELECT Id, Name
+	// 			FROM Account
+	// 			WHERE PersonEmail = :honoree.honoreeInfo.Email AND PersonEmail != NULL
+	// 			LIMIT 1
+	// 		]
+	// 		.Id;
+	// 	} catch (Exception ex) {
+	// 		System.debug('No existing account found, creating new.');
 
-			return parseRecordData(
-				new AccountData(
-					honoree.honoreeInfo.FirstName,
-					honoree.honoreeInfo.LastName,
-					honoree.honoreeInfo.Email,
-					honoree.honoreeInfo.Phone,
-					honoree.honoreeInfo.Street,
-					honoree.honoreeInfo.City,
-					honoree.honoreeInfo.State,
-					honoree.honoreeInfo.Zip,
-					null,
-					'Other'
-				),
-				true
-			);
-		}
-	}
+	// 		return parseRecordData(
+	// 			new AccountData(
+	// 				honoree.honoreeInfo.FirstName,
+	// 				honoree.honoreeInfo.LastName,
+	// 				honoree.honoreeInfo.Email,
+	// 				honoree.honoreeInfo.Phone,
+	// 				honoree.honoreeInfo.Street,
+	// 				honoree.honoreeInfo.City,
+	// 				honoree.honoreeInfo.State,
+	// 				honoree.honoreeInfo.Zip,
+	// 				null,
+	// 				'Other'
+	// 			),
+	// 			true
+	// 		);
+	// 	}
+	// }
 
+	/**
+	 * @description Creates new organization or person account records from the given data.
+	 * @author Zachary Csotya | 12/30/2024
+	 * @param AccountData data
+	 * @param Boolean person
+	 * @return Id
+	 **/
 	private Id parseRecordData(AccountData data, Boolean person) {
 		Account newAcc;
 		if (person) {
@@ -207,7 +251,12 @@ public without sharing class AccountService {
 		return StripeIntegrationHelper.dbInsert(newAcc);
 	}
 
-	// Helper method to parse full name into first and last name
+	/**
+	 * @description Generates a map of first and last name from the given full name.
+	 * @author Zachary Csotya | 12/30/2024
+	 * @param String fullName
+	 * @return Map<String, String>
+	 **/
 	private Map<String, String> parseName(String fullName) {
 		if (String.isBlank(fullName)) {
 			throw new DonationProcessingException('Customer name is blank');
