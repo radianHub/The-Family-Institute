@@ -12,7 +12,7 @@ public class RequiredFieldsCache {
 	static Map<SObjectType, IFieldProvider> genericParentProviders = new Map<SObjectType, IFieldProvider>();
 
 	static Map<SObjectType, Map<SObjectField, Object>> cache = new Map<SObjectType, Map<SObjectField, Object>>{
-		// Account.sObjectType => new Map<SObjectField, Object>{ Account.Name => 'Some Account' },
+		Account.sObjectType => new Map<SObjectField, Object>{ Account.Name => 'Some Account' },
 		AccountContactRole.sObjectType => new Map<SObjectField, Object>{
 			AccountContactRole.AccountId => getGenericParentProvider(Account.sObjectType),
 			AccountContactRole.ContactId => getGenericParentProvider(Contact.sObjectType)
@@ -119,6 +119,22 @@ public class RequiredFieldsCache {
 		},
 		IdeaComment.sObjectType => new Map<SObjectField, Object>{
 			IdeaComment.IdeaId => getGenericParentProvider(Idea.sObjectType)
+		},
+		GiftCommitment.sObjectType => new Map<SObjectField, Object>{
+			GiftCommitment.Name => 'Some Gift Commitment',
+			GiftCommitment.DonorId => getGenericParentProvider(Account.sObjectType),
+			GiftCommitment.Status => 'Active',
+			GiftCommitment.ScheduleType => 'Recurring',
+			GiftCommitment.EffectiveStartDate => Date.today()
+		},
+		GiftCommitmentSchedule.sObjectType => new Map<SObjectField, Object>{
+			GiftCommitmentSchedule.StartDate => Date.today(),
+			GiftCommitmentSchedule.TransactionPeriod => 'Monthly',
+			GiftCommitmentSchedule.TransactionDay => '5',
+			GiftCommitmentSchedule.GiftCommitmentId => getGenericParentProvider(GiftCommitment.sObjectType),
+			GiftCommitmentSchedule.TransactionAmount => 100,
+			GiftCommitmentSchedule.TransactionInterval => 1,
+			GiftCommitmentSchedule.PaymentMethod => 'Unknown'
 		},
 		GiftDesignation.sObjectType => new Map<SObjectField, Object>{
 			GiftDesignation.Name => 'Some Gift Designation',
