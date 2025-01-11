@@ -1,10 +1,3 @@
-/**
- * @Class Name     :
- * @Class Purpose  :
- * @Author         : Zachary Csotya
- * @Developed On   : 01/09/2025
- * @Last Modified  : 01/09/2025
- **/
 @isTest
 private class DonationRecordServiceTest {
 	// # DATA SETUP
@@ -14,6 +7,7 @@ private class DonationRecordServiceTest {
 	private static Account org;
 	private static StripeResponse stripePayload;
 	private static StripeInvoiceResponse stripeInvoicePayload;
+	private static StripeCancellationResponse stripeCancellationPayload;
 	private static DonationRecordService donorService = new DonationRecordService();
 	private static String exMsg;
 
@@ -54,6 +48,30 @@ private class DonationRecordServiceTest {
 		stripeInvoicePayload = (StripeInvoiceResponse) System.JSON.deserialize(
 			stripeResponse,
 			StripeInvoiceResponse.class
+		);
+	}
+	private static void makeCancellationData(String subId, Blob payload) {
+		GiftCommitment gift = (GiftCommitment) new SObjectBuilder(GiftCommitment.SObjectType)
+			.put(GiftCommitment.StripeSubscriptionId__c, subId)
+			.create()
+			.getRecord();
+
+		GiftCommitmentSchedule giftSchedule = (GiftCommitmentSchedule) new SObjectBuilder(
+				GiftCommitmentSchedule.SObjectType
+			)
+			.put(GiftCommitmentSchedule.GiftCommitmentId, gift.Id)
+			.create()
+			.getRecord();
+
+		gift.CurrentGiftCmtScheduleId = giftSchedule.Id;
+		update gift;
+
+		String stripeResponse = payload.toString().replaceAll('object', 'objectz');
+		stripeResponse = stripeResponse.replaceAll('currency', 'currencyz');
+		stripeResponse = stripeResponse.replace('"end"', '"endz"');
+		stripeCancellationPayload = (StripeCancellationResponse) System.JSON.deserialize(
+			stripeResponse,
+			StripeCancellationResponse.class
 		);
 	}
 
@@ -299,5 +317,18 @@ private class DonationRecordServiceTest {
 			exMsg.contains('No Gift Commitment found for Subscription ID:'),
 			'Expected to catch an exception.'
 		);
+	}
+
+	@isTest
+	private static void endGiftCommitmentTest() {
+		// * Test data setup
+		makeCancellationData('sub_123456', new StripeTestDataFactory().cancellation());
+
+		// * Actual test
+		donorService.endGiftCommitment(stripeCancellationPayload);
+
+		// * Asserts
+		List<GiftCommitment> giftCommitment = [SELECT Id, Status FROM GiftCommitment];
+		Assert.areEqual('Closed', giftCommitment[0].Status, 'Commitment should be closed.');
 	}
 }

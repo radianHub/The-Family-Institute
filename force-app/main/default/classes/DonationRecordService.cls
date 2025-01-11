@@ -2,8 +2,8 @@
  * @Class Name     : DonationRecordService
  * @Class Purpose  : Handles database logic for all objects related to donations.
  * @Author         : Zachary Csotya
- * @Developed On   : 01/09/2025
- * @Last Modified  : 01/09/2025
+ * @Developed On   : 01/10/2025
+ * @Last Modified  : 01/10/2025
  **/
 public without sharing class DonationRecordService {
 	/**
@@ -332,6 +332,29 @@ public without sharing class DonationRecordService {
 		}
 
 		update new List<GiftTransaction>(transactionSet);
+	}
+
+	/**
+	 * @description Finds and ends a Gift Commitment and Gift Commitment Schedule.
+	 * @author Zachary Csotya | 01/10/2025
+	 * @param StripeCancellationResponse response
+	 **/
+	public void endGiftCommitment(StripeCancellationResponse response) {
+		String subscriptionId = response.data.objectz.id;
+		Date endDate = DateTime.newInstance((Long) response.data.objectz.ended_at * 1000).date();
+
+		GiftCommitment commitment = [
+			SELECT Id, StripeSubscriptionId__c, CurrentGiftCmtScheduleId
+			FROM GiftCommitment
+			WHERE StripeSubscriptionId__c = :subscriptionId
+		];
+
+		Set<SObject> recordsToUpdate = new Set<SObject>{
+			new GiftCommitment(Id = commitment.Id, Status = 'Closed', ExpectedEndDate = endDate),
+			new GiftCommitmentSchedule(Id = commitment.CurrentGiftCmtScheduleId, EndDate = endDate)
+		};
+
+		update new List<SObject>(recordsToUpdate);
 	}
 
 	/**
