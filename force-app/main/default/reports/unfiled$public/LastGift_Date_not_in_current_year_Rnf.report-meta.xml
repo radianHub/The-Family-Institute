@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>DonorGiftSummary$Donor</field>
+    </columns>
+    <columns>
+        <field>DonorGiftSummary$LastGiftDate</field>
+    </columns>
+    <columns>
+        <field>DonorGiftSummary$FirstGiftDate</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>DonorGiftSummary$FirstGiftAmount</field>
+    </columns>
+    <filter>
+        <criteriaItems>
+            <column>DonorGiftSummary$LastGiftDate</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>notEqual</operator>
+            <value>THIS_YEAR</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>LastGift Date not in current year</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Donor_Gift_Summary__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>DonorGiftSummary$CreatedDate</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>
