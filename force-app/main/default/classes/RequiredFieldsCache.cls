@@ -12,7 +12,12 @@ public class RequiredFieldsCache {
 	static Map<SObjectType, IFieldProvider> genericParentProviders = new Map<SObjectType, IFieldProvider>();
 
 	static Map<SObjectType, Map<SObjectField, Object>> cache = new Map<SObjectType, Map<SObjectField, Object>>{
-		Account.sObjectType => new Map<SObjectField, Object>{ Account.Name => 'Some Account' },
+		// Account.sObjectType => new Map<SObjectField, Object>{
+		// 	Account.Name => 'Some Account',
+		// 	Account.RecordTypeId => Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName()
+		// 		.get('Organization')
+		// 		.getRecordTypeId()
+		// },
 		AccountContactRole.sObjectType => new Map<SObjectField, Object>{
 			AccountContactRole.AccountId => getGenericParentProvider(Account.sObjectType),
 			AccountContactRole.ContactId => getGenericParentProvider(Contact.sObjectType)
@@ -103,32 +108,15 @@ public class RequiredFieldsCache {
 			FieldPermissions.SObjectType => String.valueOf(Opportunity.sObjectType),
 			FieldPermissions.PermissionsRead => true
 		},
-		Group.sObjectType => new Map<SObjectField, Object>{ Group.Name => 'Some Group' },
-		GroupMember.sObjectType => new Map<SObjectField, Object>{
-			GroupMember.GroupId => getGenericParentProvider(Group.sObjectType),
-			GroupMember.UserOrGroupId => getGenericParentProvider(User.sObjectType)
-		},
-		Holiday.sObjectType => new Map<SObjectField, Object>{
-			Holiday.Name => 'Some Holiday',
-			Holiday.ActivityDate => Date.today()
-		},
-		Idea.sObjectType => new Map<SObjectField, Object>{
-			Idea.CommunityId => SObjectFactory.provideQueriedParent(Community.sObjectType),
-			Idea.Categories => 'Training',
-			Idea.Title => 'Some Idea'
-		},
-		IdeaComment.sObjectType => new Map<SObjectField, Object>{
-			IdeaComment.IdeaId => getGenericParentProvider(Idea.sObjectType)
-		},
 		GiftCommitment.sObjectType => new Map<SObjectField, Object>{
 			GiftCommitment.Name => 'Some Gift Commitment',
-			GiftCommitment.DonorId => getGenericParentProvider(Account.sObjectType),
+			// GiftCommitment.DonorId => getGenericParentProvider(Account.sObjectType),
 			GiftCommitment.Status => 'Active',
 			GiftCommitment.ScheduleType => 'Recurring',
-			GiftCommitment.EffectiveStartDate => Date.today()
+			GiftCommitment.EffectiveStartDate => Date.newInstance(2024, 12, 15)
 		},
 		GiftCommitmentSchedule.sObjectType => new Map<SObjectField, Object>{
-			GiftCommitmentSchedule.StartDate => Date.today(),
+			GiftCommitmentSchedule.StartDate => Date.newInstance(2024, 12, 15),
 			GiftCommitmentSchedule.TransactionPeriod => 'Monthly',
 			GiftCommitmentSchedule.TransactionDay => '5',
 			GiftCommitmentSchedule.GiftCommitmentId => getGenericParentProvider(GiftCommitment.sObjectType),
@@ -145,6 +133,23 @@ public class RequiredFieldsCache {
 			GiftDefaultDesignation.ParentRecordId => getGenericParentProvider(Campaign.sObjectType),
 			GiftDefaultDesignation.GiftDesignationId => getGenericParentProvider(GiftDesignation.sObjectType),
 			GiftDefaultDesignation.AllocatedPercentage => 100
+		},
+		Group.sObjectType => new Map<SObjectField, Object>{ Group.Name => 'Some Group' },
+		GroupMember.sObjectType => new Map<SObjectField, Object>{
+			GroupMember.GroupId => getGenericParentProvider(Group.sObjectType),
+			GroupMember.UserOrGroupId => getGenericParentProvider(User.sObjectType)
+		},
+		Holiday.sObjectType => new Map<SObjectField, Object>{
+			Holiday.Name => 'Some Holiday',
+			Holiday.ActivityDate => Date.today()
+		},
+		Idea.sObjectType => new Map<SObjectField, Object>{
+			Idea.CommunityId => SObjectFactory.provideQueriedParent(Community.sObjectType),
+			Idea.Categories => 'Training',
+			Idea.Title => 'Some Idea'
+		},
+		IdeaComment.sObjectType => new Map<SObjectField, Object>{
+			IdeaComment.IdeaId => getGenericParentProvider(Idea.sObjectType)
 		},
 		Lead.sObjectType => new Map<SObjectField, Object>{ Lead.LastName => 'Doe', Lead.Company => 'ACME' },
 		Note.sObjectType => new Map<SObjectField, Object>{

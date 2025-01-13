@@ -2,8 +2,8 @@
  * @Class Name     : CampaignService
  * @Class Purpose  : Handles all database logic for Campaign records.
  * @Author         : Zachary Csotya
- * @Developed On   : 12/30/2024
- * @Last Modified  : 12/30/2024
+ * @Developed On   : 01/13/2025
+ * @Last Modified  : 01/13/2025
  **/
 public without sharing class CampaignService {
 	/**
@@ -49,5 +49,24 @@ public without sharing class CampaignService {
 			// * Insert Campaign Member
 			memberId = StripeIntegrationHelper.dbInsert(newMember);
 		}
+	}
+
+	/**
+	 * @description Generates a donation link for a list of campaigns
+	 * @author Zachary Csotya | 01/13/2025
+	 * @param List<Campaign> campaigns
+	 **/
+	public static void generateDonationUrl(List<Campaign> campaigns) {
+		Set<Campaign> campaignsToUpdate = new Set<Campaign>();
+		String baseUrl = StripeIntegrationHelper.getCommunityBaseUrl('Donation1', 'donate');
+
+		for (Campaign camp : campaigns) {
+			if (String.isNotBlank(camp.DonationUrl__c)) {
+				continue;
+			}
+			campaignsToUpdate.add(new Campaign(Id = camp.Id, DonationUrl__c = baseUrl + '?campaign=' + camp.Id));
+		}
+
+		update new List<Campaign>(campaignsToUpdate);
 	}
 }

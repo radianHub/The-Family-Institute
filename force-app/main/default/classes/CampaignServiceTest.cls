@@ -80,4 +80,16 @@ private class CampaignServiceTest {
 		// * Asserts
 		Assert.areEqual('Invalid Campaign or format.', exMsg, 'No exception thrown.');
 	}
+
+	@isTest
+	private static void generateDonationUrlTest() {
+		// * Test data setup
+		camp = (Campaign) new SObjectBuilder(Campaign.SObjectType).create().getRecord();
+
+		// * Actual test
+		Campaign updatedCamp = [SELECT Id, DonationUrl__c FROM Campaign WHERE Id = :camp.Id];
+
+		// * Asserts
+		Assert.isNotNull(updatedCamp.DonationUrl__c, 'Donation URL not generated.');
+	}
 }
