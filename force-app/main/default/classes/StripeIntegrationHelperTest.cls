@@ -61,4 +61,22 @@ private class StripeIntegrationHelperTest {
 		Assert.areEqual('125.00', amt1Str, 'Amount 1 should be converted to a string with cents.');
 		Assert.areEqual('145.60', amt2Str, 'Amount 2 should be converted to a string with cents.');
 	}
+
+	@isTest
+	private static void generateCommunityUrlTest() {
+		// * Test data setup
+		String exMsg;
+
+		// * Actual test
+		String url = StripeIntegrationHelper.getCommunityBaseUrl('Donation1', 'donate');
+		try {
+			StripeIntegrationHelper.getCommunityBaseUrl(null, null);
+		} catch (Exception ex) {
+			exMsg = ex.getMessage();
+		}
+
+		// * Asserts
+		Assert.isNotNull(url, 'Url was not generated');
+		Assert.isNotNull(exMsg, 'Expected an exception');
+	}
 }

@@ -16,8 +16,13 @@ private class StripeCancellationCallbackResourceTest {
 	}
 
 	private static void makeData(String stripeSubId) {
+		Account acc = (Account) new SObjectBuilder(Account.SObjectType)
+			.put(Account.Name, 'Test Acc')
+			.create()
+			.getRecord();
 		GiftCommitment gift = (GiftCommitment) new SObjectBuilder(GiftCommitment.SObjectType)
 			.put(GiftCommitment.StripeSubscriptionId__c, stripeSubId)
+			.put(GiftCommitment.DonorId, acc.Id)
 			.create()
 			.getRecord();
 
