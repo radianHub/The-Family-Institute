@@ -156,14 +156,22 @@
             &quot;nodeUiConfig&quot; : {
               &quot;label&quot; : &quot;Contacts&quot;,
               &quot;recordActionsLabel&quot; : &quot;&quot;,
-              &quot;fieldsToDisplay&quot; : [ ],
+              &quot;fieldsToDisplay&quot; : [ {
+                &quot;field&quot; : &quot;Roles&quot;,
+                &quot;whichEntity&quot; : &quot;JUNCTION&quot;
+              }, {
+                &quot;field&quot; : &quot;IsPrimaryMember&quot;,
+                &quot;whichEntity&quot; : &quot;JUNCTION&quot;
+              } ],
               &quot;showFieldLabels&quot; : true,
               &quot;actions&quot; : {
                 &quot;containerActions&quot; : [ {
                   &quot;action&quot; : &quot;AddRelation&quot;
                 } ],
                 &quot;recordActions&quot; : [ ],
-                &quot;junctionRecordActions&quot; : [ ]
+                &quot;junctionRecordActions&quot; : [ {
+                  &quot;action&quot; : &quot;EditRelation&quot;
+                } ]
               },
               &quot;junctionActionsLabel&quot; : &quot;&quot;
             },
