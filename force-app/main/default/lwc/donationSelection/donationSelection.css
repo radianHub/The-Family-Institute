@@ -1,0 +1,101 @@
+.container {
+	background-color: white;
+	border-radius: 15px;
+	width: 25em;
+	box-shadow: 0em 0em 0.5em 0px black;
+}
+
+.container > div {
+	padding: 1em;
+}
+
+.header {
+	background-color: black;
+	color: white;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+}
+
+.items > div {
+	padding: 1em;
+}
+
+.givingType {
+	display: flex;
+	flex-wrap: wrap;
+	row-gap: 10px;
+	justify-content: space-around;
+}
+
+.recurFreq {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 5px;
+}
+
+.typeBtn {
+	width: 10em;
+	height: 3em;
+}
+
+.freqBtn {
+	width: 6em;
+	height: 3em;
+}
+
+.givingAmounts {
+	display: grid;
+	row-gap: 15px;
+	grid-template-columns: 40% 40%;
+	justify-content: space-evenly;
+	justify-items: center;
+}
+
+.amtBtns {
+	width: 9em;
+	height: 3em;
+}
+
+.otherAmt {
+	display: grid;
+	justify-content: center;
+}
+
+.otherAmt lightning-input {
+	width: 18em;
+}
+
+.options {
+	display: grid;
+	justify-items: center;
+}
+
+.info {
+	width: 20em;
+}
+
+.col {
+	display: grid;
+	column-gap: 10px;
+	justify-content: space-between;
+}
+
+.col :first-child {
+	grid-column: 1 / 1;
+}
+
+.col :last-child {
+	grid-column: 2 / 2;
+}
+
+.fee {
+	display: grid;
+	justify-items: center;
+	row-gap: 15px;
+}
+
+.detailsBtn {
+	display: flex;
+	justify-content: center;
+}

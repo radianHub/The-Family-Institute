@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Use_Flat_Fee__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Determines whether a flat fee or percentage is used to determine the processing fee for donations.</description>
+    <externalId>false</externalId>
+    <label>Use Flat Fee</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>
