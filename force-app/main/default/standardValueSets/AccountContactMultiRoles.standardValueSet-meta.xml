@@ -46,9 +46,4 @@
         <default>false</default>
         <label>Other</label>
     </standardValue>
-    <standardValue>
-        <fullName>Spouse</fullName>
-        <default>false</default>
-        <label>Spouse</label>
-    </standardValue>
 </StandardValueSet>
