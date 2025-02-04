@@ -3,7 +3,7 @@
  * @Class Purpose  : Handles database logic for all objects related to donations.
  * @Author         : Zachary Csotya
  * @Developed On   : 01/10/2025
- * @Last Modified  : 01/10/2025
+ * @Last Modified  : 02/04/2025
  **/
 public without sharing class DonationRecordService {
 	/**
@@ -221,7 +221,7 @@ public without sharing class DonationRecordService {
 				FormalCommitmentType = 'Written',
 				StripeSubscriptionId__c = stripeResponse.data.objectz.subscription
 			);
-			insert commitment;
+			upsert commitment StripeSubscriptionId__c;
 
 			// * Create GiftCommitmentSchedule record
 			GiftCommitmentSchedule schedule = new GiftCommitmentSchedule(
@@ -233,9 +233,10 @@ public without sharing class DonationRecordService {
 				GiftCommitmentId = commitment.Id,
 				TransactionAmount = giftAmt,
 				TransactionInterval = recurrence.intervalCount,
-				PaymentMethod = 'Stripe'
+				PaymentMethod = 'Stripe',
+				StripeSubscriptionId__c = stripeResponse.data.objectz.subscription
 			);
-			insert schedule;
+			upsert schedule StripeSubscriptionId__c;
 
 			commitment.CurrentGiftCmtScheduleId = schedule.Id;
 			update commitment;
@@ -269,7 +270,7 @@ public without sharing class DonationRecordService {
 				GiftCommitmentId = commitment.Id,
 				GiftCommitmentScheduleId = schedule.Id
 			);
-			insert giftTransaction;
+			upsert giftTransaction stripeId__c;
 
 			// * Create GiftTribute record if honoree information is provided
 			if (honoree.isHonor) {
