@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Major_Gift__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>If opportunity amount is = &gt; 10k then Major Gift = True</description>
+    <externalId>false</externalId>
+    <label>Major Gift</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Checkbox</type>
+</CustomField>
