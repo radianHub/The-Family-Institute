@@ -52,9 +52,13 @@ private class DonationRecordServiceTest {
 	}
 	private static void makeCancellationData(String subId, Blob payload) {
 		Account acc = (Account) new SObjectBuilder(Account.SObjectType)
-            		.put(Account.LastName, 'Smith')
-            		.create()
-            		.getRecord();
+			.put(
+				Account.RecordTypeId,
+				Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Organization').getRecordTypeId()
+			)
+			.put(Account.Name, 'Test Org')
+			.create()
+			.getRecord();
 
 		GiftCommitment gift = (GiftCommitment) new SObjectBuilder(GiftCommitment.SObjectType)
 			.put(GiftCommitment.StripeSubscriptionId__c, subId)
