@@ -62,6 +62,7 @@ private class DonationRecordServiceTest {
 
 		GiftCommitment gift = (GiftCommitment) new SObjectBuilder(GiftCommitment.SObjectType)
 			.put(GiftCommitment.StripeSubscriptionId__c, subId)
+			.put(GiftCommitment.DonorId, acc.Id)
 			.create()
 			.getRecord();
 
