@@ -1,0 +1,364 @@
+<!-- sldsValidatorIgnore -->
+<template>
+	<lightning-layout horizontal-align="center">
+		<lightning-layout-item>
+			<div class="container">
+				<div
+					class="header"
+					style={customHeaderColor}>
+					<p
+						class="slds-text-heading_medium slds-text-align_center"
+						style={customTextColor}>
+						Donation Amount
+					</p>
+					<template lwc:if={noTotal}>
+						<p
+							class="slds-text-heading_medium slds-text-align_center"
+							style={customTextColor}>
+							${total}
+						</p>
+					</template>
+				</div>
+				<div class="items">
+					<!-- * GIVING OPTIONS -->
+					<div class="givingType">
+						<button
+							class="typeBtn slds-button slds-button_brand"
+							id="once"
+							name="once"
+							value="once"
+							onclick={clickDonationTypeBtn}>
+							<span>One-Time</span>
+						</button>
+						<button
+							class="typeBtn slds-button slds-button_neutral"
+							id="recur"
+							name="recur"
+							value="recur"
+							onclick={clickDonationTypeBtn}>
+							<span>Recurring</span>
+						</button>
+						<template lwc:if={showFreq}>
+							<div class="recurFreq">
+								<button
+									class="freqBtn slds-button slds-button_neutral"
+									id="week"
+									name="week"
+									value="week"
+									onclick={clickFreqTypeBtn}>
+									<span>Weekly</span>
+								</button>
+								<button
+									class="freqBtn slds-button slds-button_neutral"
+									id="biweek"
+									name="biweek"
+									value="biweek"
+									onclick={clickFreqTypeBtn}>
+									<span>Biweekly</span>
+								</button>
+								<button
+									class="freqBtn slds-button slds-button_brand"
+									id="month"
+									name="month"
+									value="month"
+									onclick={clickFreqTypeBtn}>
+									<span>Monthly</span>
+								</button>
+								<button
+									class="freqBtn slds-button slds-button_neutral"
+									id="quarter"
+									name="quarter"
+									value="quarter"
+									onclick={clickFreqTypeBtn}>
+									<span>Quarterly</span>
+								</button>
+								<button
+									class="freqBtn slds-button slds-button_neutral"
+									id="year"
+									name="year"
+									value="year"
+									onclick={clickFreqTypeBtn}>
+									<span>Yearly</span>
+								</button>
+							</div>
+						</template>
+					</div>
+					<!-- * ONE-TIME GIVING AMOUNTS -->
+					<template lwc:if={typeOnce}>
+						<div class="givingAmounts">
+							<template
+								for:each={donationAmounts.once}
+								for:item="amt"
+								for:index="i">
+								<button
+									class="amtBtns slds-button slds-button_neutral"
+									name={i}
+									key={amt}
+									value={amt}
+									onclick={clickDonationAmtBtn}>
+									<span>${amt}</span>
+								</button>
+							</template>
+						</div>
+					</template>
+					<!-- * RECURRING GIVING AMOUNTS -->
+					<template lwc:elseif={typeRecur}>
+						<div class="givingAmounts">
+							<template
+								for:each={donationAmounts.month}
+								for:item="amt"
+								for:index="i">
+								<button
+									class="amtBtns slds-button slds-button_neutral"
+									name={i}
+									key={amt}
+									value={amt}
+									type="button"
+									onclick={clickDonationAmtBtn}>
+									<span>${amt}</span>
+								</button>
+							</template>
+						</div>
+					</template>
+					<!-- * OTHER GIVING AMOUNT -->
+					<div class="otherAmt">
+						<lightning-input
+							data-id="otherAmt"
+							type="number"
+							label="Other Amount"
+							name="otherAmount"
+							formatter="currency"
+							step="0.01"
+							onchange={changeOtherDonationAmt}>
+						</lightning-input>
+					</div>
+					<!-- * EMPLOYER MATCHING OPTION -->
+					<div
+						lwc:if={typeOnce}
+						class="options">
+						<lightning-input
+							class="info"
+							type="checkbox"
+							label="Employer gift matching"
+							name="match"
+							checked={match}
+							onchange={clickMatchCheckbox}>
+						</lightning-input>
+						<template lwc:if={match}>
+							<div class="info matchInfo">
+								<lightning-input
+									type="text"
+									name="employerName"
+									label="Employer Name"
+									required={match}
+									value={employer.Name}>
+								</lightning-input>
+							</div>
+						</template>
+					</div>
+					<!-- * ANONYMOUS OPTION -->
+					<div class="options">
+						<lightning-input
+							class="info"
+							type="checkbox"
+							label="I would like the gift to remain anonymous"
+							name="anonymous"
+							checked={anonymous}
+							onchange={clickAnonymousCheckbox}>
+						</lightning-input>
+					</div>
+					<!-- * ORGANIZATION OPTION -->
+					<div class="options">
+						<lightning-input
+							class="info"
+							type="checkbox"
+							label="Make this gift on behalf of an organization"
+							name="organization"
+							checked={organization}
+							onchange={clickOrganizationCheckbox}>
+						</lightning-input>
+						<template lwc:if={organization}>
+							<div class="info orgInfo">
+								<lightning-input
+									type="text"
+									name="orgName"
+									label="Organization Name"
+									required={organization}
+									value={org.Name}>
+								</lightning-input>
+								<lightning-input
+									type="text"
+									name="Street"
+									label="Address"
+									required={organization}
+									value={org.Street}>
+								</lightning-input>
+								<lightning-input
+									type="text"
+									name="City"
+									label="City"
+									required={organization}
+									value={org.City}>
+								</lightning-input>
+								<div class="col">
+									<lightning-combobox
+										name="State"
+										label="State"
+										value={org.State}
+										required={organization}
+										options={stateOptions}>
+									</lightning-combobox>
+									<lightning-input
+										type="text"
+										name="Zip"
+										label="Zip Code"
+										value={org.Zip}
+										required={organization}
+										max-length="10">
+									</lightning-input>
+								</div>
+								<lightning-input
+									type="tel"
+									name="Phone"
+									label="Phone Number"
+									value={org.Phone}
+									required={organization}
+									placeholder="XXX-XXX-XXXX">
+								</lightning-input>
+							</div>
+						</template>
+					</div>
+					<!-- * HONOR/MEMORIAL OPTION -->
+					<div class="options">
+						<lightning-input
+							class="info"
+							type="checkbox"
+							label="My gift is in honor or memory of someone"
+							name="honor"
+							checked={honor}
+							onchange={clickHonorCheckBox}>
+						</lightning-input>
+						<template lwc:if={honor}>
+							<lightning-radio-group
+								class="info"
+								name="honorGroup"
+								label=""
+								options={honorOptions}
+								value={honorSelection}
+								type="radio"
+								onchange={honorGroupChanged}>
+							</lightning-radio-group>
+							<div class="info honorInfo">
+								<!-- <lightning-textarea
+									name="HonoreeDescription"
+									label="Additional Comments"
+									value={honoree.HonoreeDescription}
+									field-level-help="Please provide name and contact information for the person this donation is on behalf of."
+									placeholder="John Smith, 123-456-7891, example@gmail.com">
+								</lightning-textarea> -->
+								<div class="col">
+									<lightning-input
+										type="text"
+										name="FirstName"
+										label="First Name"
+										required={honor}
+										value={honoree.FirstName}>
+									</lightning-input>
+									<lightning-input
+										type="text"
+										name="LastName"
+										label="Last Name"
+										required={honor}
+										value={honoree.LastName}>
+									</lightning-input>
+								</div>
+								<template lwc:if={isHonor}>
+									<lightning-input
+										type="text"
+										name="Street"
+										label="Address"
+										required={isHonor}
+										value={honoree.Street}>
+									</lightning-input>
+									<lightning-input
+										type="text"
+										name="City"
+										label="City"
+										required={isHonor}
+										value={honoree.City}>
+									</lightning-input>
+									<div class="col">
+										<lightning-combobox
+											name="State"
+											label="State"
+											value={honoree.State}
+											required={isHonor}
+											options={stateOptions}>
+										</lightning-combobox>
+										<lightning-input
+											type="text"
+											name="Zip"
+											label="Zip Code"
+											value={honoree.Zip}
+											required={isHonor}
+											max-length="10">
+										</lightning-input>
+									</div>
+									<lightning-input
+										type="email"
+										name="Email"
+										label="Email Address"
+										value={honoree.Email}
+										required={isHonor}
+										placeholder="example@domain.com">
+									</lightning-input>
+									<lightning-input
+										type="tel"
+										name="Phone"
+										label="Phone Number"
+										value={honoree.Phone}
+										required={isHonor}
+										placeholder="XXX-XXX-XXXX">
+									</lightning-input>
+								</template>
+							</div>
+						</template>
+					</div>
+					<!-- * FEE OPTION -->
+					<template lwc:if={selectedDonation}>
+						<div class="fee">
+							<lightning-input
+								class="info"
+								type="checkbox"
+								label={feeCheckboxLabel}
+								name="feeChkbx"
+								checked={addFee}
+								onchange={checkFeeCheckbox}>
+							</lightning-input>
+							<div><b>My total donation is ${total}</b></div>
+						</div>
+					</template>
+					<!-- * DONATE BUTTONS -->
+					<div class="detailsBtn">
+						<lightning-button
+							variant="brand"
+							label="Donate Now"
+							title="donate"
+							icon-name="utility:currency"
+							icon-position="right"
+							onclick={clickDonateBtn}>
+						</lightning-button>
+						<!-- <lightning-button
+								variant="brand"
+								label="Payment Details"
+								title="paymentBtn"
+								icon-name="utility:forward"
+								icon-position="right"
+								onclick={clickPaymentDetailsBtn}>
+							</lightning-button> -->
+					</div>
+				</div>
+			</div>
+		</lightning-layout-item>
+	</lightning-layout>
+</template>

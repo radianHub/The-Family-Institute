@@ -1,0 +1,15 @@
+<template lwc:render-mode="light">
+	<template lwc:if={showDonation}>
+		<c-donation-selection
+			onhide={hideElement}
+			header-color={headerColor}
+			header-text-color={headerTextColor}
+			public-api-key={publicApiKey}
+			callback-url={callbackUrl}></c-donation-selection>
+	</template>
+	<lightning-layout horizontal-align="center">
+		<lightning-layout-item>
+			<div class="checkout"></div>
+		</lightning-layout-item>
+	</lightning-layout>
+</template>
