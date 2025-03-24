@@ -24,14 +24,8 @@ public with sharing class OutreachSourceCodeService {
 				continue;
 			}
 			if (campaigns.get(osc.CampaignId).Type != 'Event') {
-				oscsToUpdate.add(
-					new OutreachSourceCode(
-						Id = osc.Id,
-						DonationUrl__c = baseUrl + '?campaign=' + osc.CampaignId + '&osc=' + osc.Id
-					)
-				);
+				osc.DonationUrl__c = baseUrl + '?campaign=' + osc.CampaignId + '&osc=' + osc.Id;
 			}
 		}
-		update new List<OutreachSourceCode>(oscsToUpdate);
 	}
 }
