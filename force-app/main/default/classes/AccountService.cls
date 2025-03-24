@@ -3,7 +3,7 @@
  * @Class Purpose  : Handles all database logic for Account records.
  * @Author         : Zachary Csotya
  * @Developed On   : 12/31/2024
- * @Last Modified  : 12/31/2024
+ * @Last Modified  : 03/12/2025
  **/
 public without sharing class AccountService {
 	final static Id PERSON_ACCT_RT = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName()
@@ -59,6 +59,42 @@ public without sharing class AccountService {
 					customerDetails.address.state,
 					customerDetails.address.postal_code,
 					customerDetails.address.country,
+					'Donor'
+				),
+				true
+			);
+		}
+	}
+
+	/**
+	 * @description Retrieves the id of the person account by given email, if person not found creates a new person account record.
+	 * @author Zachary Csotya | 03/12/2025
+	 * @param StripeResponse.cls_payer payerDetails
+	 * @return Id
+	 **/
+	public Id getOrCreatePersonAccount(StripeResponse.cls_payer payerDetails) {
+		if (payerDetails == null || String.isBlank(payerDetails.email)) {
+			throw new DonationProcessingException('Customer details or email is null');
+		}
+
+		try {
+			// * Query for existing account by email
+			return [SELECT Id, Name FROM Account WHERE PersonEmail = :payerDetails.email LIMIT 1].Id;
+		} catch (Exception ex) {
+			System.debug('No existing account found, creating new.');
+
+			// * Create new person account
+			return parseRecordData(
+				new AccountData(
+					payerDetails.firstName,
+					payerDetails.lastName,
+					payerDetails.email,
+					String.isNotBlank(payerDetails.phone) ? payerDetails.phone.removeStart('+1') : null,
+					payerDetails.street,
+					payerDetails.city,
+					payerDetails.state,
+					payerDetails.zip,
+					null,
 					'Donor'
 				),
 				true

@@ -6,6 +6,13 @@ private class StripeCallbackResourceTest {
 	private static GiftDefaultDesignation gdd;
 	private static RestRequest req;
 	private static RestResponse res;
+	private static Map<String, HttpResponse> resStore = new Map<String, HttpResponse>{
+		'lineItemSuccess' => HttpResponseFactory.lineItemSuccess(),
+		'lineItemFailure' => HttpResponseFactory.lineItemFailure()
+	};
+	private static List<HttpMatchingStrategy> matchers = new List<HttpMatchingStrategy>{
+		new HttpResponseMatchers.SessionLineItemMatcher()
+	};
 
 	private static void makeData() {
 		camp = (Campaign) new SObjectBuilder(Campaign.SObjectType).create().getRecord();
@@ -142,6 +149,56 @@ private class StripeCallbackResourceTest {
 			SELECT Id, CurrentGiftCmtScheduleId
 			FROM GiftCommitment
 			WHERE Id = :gift[0].GiftCommitmentId
+		];
+		Assert.areEqual(1, commitment.size(), 'No gift commitment created.');
+		Assert.isNotNull(commitment[0].CurrentGiftCmtScheduleId, 'No gift commitment schedule created.');
+	}
+
+	@isTest
+	private static void oneTimeTicketPurchaseTest() {
+		// * Test data setup
+		MockMultiHttpResponseGenerator mock = new MockMultiHttpResponseGenerator(resStore, matchers, true);
+		Test.setMock(HttpCalloutMock.class, mock);
+		makeData();
+		StripeTestDataFactory stf = new StripeTestDataFactory(camp.Id, null);
+		buildRestContext(stf.oneTimeTicketPurchase());
+
+		// * Actual test
+		Test.startTest();
+		StripeCallbackResource.doPost();
+		Test.stopTest();
+
+		// * Asserts
+		Map<String, Object> resBody = (Map<String, Object>) System.JSON.deserializeUntyped(res.responseBody.toString());
+		Assert.areEqual(true, resBody.get('success'), 'Ticket purchase failed. Expected success.');
+
+		List<GiftTransaction> tickets = [SELECT Id, DonorId FROM GiftTransaction];
+		Assert.areEqual(1, tickets.size(), 'No ticket transaction created.');
+		Assert.isNotNull(tickets[0].DonorId, 'No donor id assigned to gift transaction.');
+	}
+
+	@isTest
+	private static void recurringTicketPurchaseTest() {
+		// * Test data setup
+		makeData();
+		StripeTestDataFactory stf = new StripeTestDataFactory(camp.Id, null);
+		buildRestContext(stf.recurringTicketPurchase());
+
+		// * Actual test
+		StripeCallbackResource.doPost();
+
+		// * Asserts
+		Map<String, Object> resBody = (Map<String, Object>) System.JSON.deserializeUntyped(res.responseBody.toString());
+		Assert.areEqual(true, resBody.get('success'), 'Ticket purchase failed. Expected success.');
+
+		List<GiftTransaction> tickets = [SELECT Id, DonorId, GiftCommitmentId FROM GiftTransaction];
+		Assert.areEqual(1, tickets.size(), 'No ticket transaction created.');
+		Assert.isNotNull(tickets[0].DonorId, 'No donor id assigned to gift transaction.');
+
+		List<GiftCommitment> commitment = [
+			SELECT Id, CurrentGiftCmtScheduleId
+			FROM GiftCommitment
+			WHERE Id = :tickets[0].GiftCommitmentId
 		];
 		Assert.areEqual(1, commitment.size(), 'No gift commitment created.');
 		Assert.isNotNull(commitment[0].CurrentGiftCmtScheduleId, 'No gift commitment schedule created.');
