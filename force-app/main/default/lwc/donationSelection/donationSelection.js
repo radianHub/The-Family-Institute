@@ -428,7 +428,7 @@ export default class DonationSelection extends LightningElement {
 			const data = await response.json();
 			// console.log('ClientSecret::', client_secret);
 			// console.log('Checkout::', id);
-			console.log(data);
+			// console.log(data);
 			checkoutId = data.id;
 			return data.client_secret;
 		};
