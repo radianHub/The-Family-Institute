@@ -1,5 +1,14 @@
 public without sharing class DonationSelectionController {
 	@AuraEnabled(cacheable=true)
+	public static Campaign getCampaign(String campaignId) {
+		return [
+			SELECT Id, Name, Type, EventAmount__c, AllowPayments__c, MaxPaymentLength__c
+			FROM Campaign
+			WHERE Id = :campaignId
+		];
+	}
+
+	@AuraEnabled(cacheable=true)
 	public static List<Donation_Amount__mdt> getDonationAmounts() {
 		return [
 			SELECT
@@ -63,6 +72,25 @@ public without sharing class DonationSelectionController {
 		return new List<Fund>(funds);
 	}
 
+	@AuraEnabled
+	public static void createTicketRecords(String payerJson, String campaignId, Integer ticketCount) {
+		StripeResponse.cls_payer payer = new StripeResponse.cls_payer().parse(payerJson);
+		System.debug(payer);
+
+		// * Instantiate service classes
+		AccountService accService = new AccountService();
+		CampaignService campaignService = new CampaignService();
+		DonationRecordService donationService = new DonationRecordService();
+
+		// * Retrieve or create Person Account
+		Id personId = accService.getOrCreatePersonAccount(payer);
+
+		// * Create campaign member for Person
+		campaignService.createCampaignMember(personId, campaignId);
+
+		// * Create gift transaction of type ticket
+		donationService.createZeroDollarTicket(personId, campaignId, ticketCount);
+	}
 	public class Fund {
 		@AuraEnabled
 		public String label;

@@ -84,12 +84,20 @@ private class CampaignServiceTest {
 	@isTest
 	private static void generateDonationUrlTest() {
 		// * Test data setup
-		camp = (Campaign) new SObjectBuilder(Campaign.SObjectType).create().getRecord();
 
 		// * Actual test
-		Campaign updatedCamp = [SELECT Id, DonationUrl__c FROM Campaign WHERE Id = :camp.Id];
+		Test.startTest();
+		camp = (Campaign) new SObjectBuilder(Campaign.SObjectType).create().getRecord();
+		camp.Type = 'Event';
+		update camp;
+
+		camp.Name = 'Test Event';
+		update camp;
+		Test.stopTest();
 
 		// * Asserts
+		Campaign updatedCamp = [SELECT Id, DonationUrl__c, Type FROM Campaign WHERE Id = :camp.Id];
+		System.debug(updatedCamp.Type);
 		Assert.isNotNull(updatedCamp.DonationUrl__c, 'Donation URL not generated.');
 	}
 }
