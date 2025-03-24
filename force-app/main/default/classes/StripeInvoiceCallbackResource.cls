@@ -3,7 +3,7 @@
  * @Class Purpose  : Listens for a successful Stripe Invoice completion and processes the donation.
  * @Author         : Zachary Csotya
  * @Developed On   : 12/30/2024
- * @Last Modified  : 12/30/2024
+ * @Last Modified  : 03/14/2025
  **/
 @RestResource(UrlMapping='/invoice')
 global without sharing class StripeInvoiceCallbackResource {
@@ -28,12 +28,12 @@ global without sharing class StripeInvoiceCallbackResource {
 			transactionId = stripeResponse.id;
 			System.debug('Processing transaction ID: ' + transactionId);
 
-			// * Extract and process metadata (gift type, honoree, recurrence)
-			StripeInvoiceResponse.cls_metadata metadata = stripeResponse.data.objectz.metadata;
+			// * Extract and process metadata (isTicket)
+			StripeInvoiceResponse.cls_subscription_details_metadata metadata = stripeResponse.data.objectz.subscription_details.metadata;
 
 			// * Update gift transactions with incoming invoice data
 			DonationRecordService donation = new DonationRecordService();
-			donation.handleIncomingInvoice(stripeResponse);
+			donation.handleIncomingInvoice(stripeResponse, metadata);
 
 			// * Respond with success
 			responseMap.put('success', true);

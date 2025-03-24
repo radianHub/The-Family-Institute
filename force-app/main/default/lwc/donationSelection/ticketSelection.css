@@ -1,0 +1,70 @@
+.spinner {
+	display: flex;
+	justify-content: center;
+	height: 40em;
+}
+
+.container {
+	background-color: white;
+	border-radius: 15px;
+	width: 25em;
+	box-shadow: 0em 0em 0.5em 0px black;
+}
+
+.container > div {
+	padding: 1em;
+}
+
+.header {
+	background-color: black;
+	color: white;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+}
+
+.items > div {
+	padding: 1em;
+}
+
+.ticketGroup {
+	border: 1px solid #898d8d;
+	border-radius: 10px;
+}
+
+.ticketType {
+	display: flex;
+	justify-content: space-between;
+}
+
+.ticketDetails {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+}
+
+.payments {
+	display: flex;
+	justify-content: center;
+}
+
+.col {
+	display: flex;
+	gap: 15px;
+	justify-content: space-between;
+}
+
+.fee {
+	display: flex;
+	justify-content: center;
+}
+
+.fee div {
+	text-align: center;
+	width: 18em;
+}
+
+.detailsBtn {
+	display: flex;
+	justify-content: center;
+}

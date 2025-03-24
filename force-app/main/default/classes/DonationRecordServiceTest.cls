@@ -10,6 +10,13 @@ private class DonationRecordServiceTest {
 	private static StripeCancellationResponse stripeCancellationPayload;
 	private static DonationRecordService donorService = new DonationRecordService();
 	private static String exMsg;
+	private static Map<String, HttpResponse> resStore = new Map<String, HttpResponse>{
+		'lineItemSuccess' => HttpResponseFactory.lineItemSuccess(),
+		'lineItemFailure' => HttpResponseFactory.lineItemFailure()
+	};
+	private static List<HttpMatchingStrategy> matchers = new List<HttpMatchingStrategy>{
+		new HttpResponseMatchers.SessionLineItemMatcher()
+	};
 
 	private static void makeRecordData() {
 		camp = (Campaign) new SObjectBuilder(Campaign.SObjectType).create().getRecord();
@@ -51,8 +58,13 @@ private class DonationRecordServiceTest {
 		);
 	}
 	private static void makeCancellationData(String subId, Blob payload) {
+		Account acc = (Account) new SObjectBuilder(Account.SObjectType)
+			.put(Account.LastName, 'Smith')
+			.create()
+			.getRecord();
 		GiftCommitment gift = (GiftCommitment) new SObjectBuilder(GiftCommitment.SObjectType)
 			.put(GiftCommitment.StripeSubscriptionId__c, subId)
+			.put(GiftCommitment.DonorId, acc.Id)
 			.create()
 			.getRecord();
 
@@ -265,7 +277,7 @@ private class DonationRecordServiceTest {
 			.create();
 
 		// * Actual test
-		donorService.handleIncomingInvoice(stripeInvoicePayload);
+		donorService.handleIncomingInvoice(stripeInvoicePayload, null);
 
 		// * Asserts
 		List<GiftTransaction> gifts = [SELECT Id FROM GiftTransaction WHERE stripeId__c != NULL];
@@ -288,7 +300,7 @@ private class DonationRecordServiceTest {
 
 		// * Actual test
 		try {
-			donorService.handleIncomingInvoice(stripeInvoicePayload);
+			donorService.handleIncomingInvoice(stripeInvoicePayload, null);
 		} catch (Exception ex) {
 			exMsg = ex.getMessage();
 		}
@@ -307,7 +319,7 @@ private class DonationRecordServiceTest {
 
 		// * Actual test
 		try {
-			donorService.handleIncomingInvoice(stripeInvoicePayload);
+			donorService.handleIncomingInvoice(stripeInvoicePayload, null);
 		} catch (Exception ex) {
 			exMsg = ex.getMessage();
 		}
@@ -330,5 +342,80 @@ private class DonationRecordServiceTest {
 		// * Asserts
 		List<GiftCommitment> giftCommitment = [SELECT Id, Status FROM GiftCommitment];
 		Assert.areEqual('Closed', giftCommitment[0].Status, 'Commitment should be closed.');
+	}
+
+	@isTest
+	private static void createOneTimeTicketPaymentTest() {
+		// * Test data setup
+		MockMultiHttpResponseGenerator mock = new MockMultiHttpResponseGenerator(resStore, matchers, true);
+		Test.setMock(HttpCalloutMock.class, mock);
+		makeRecordData();
+
+		// * Actual test
+		Test.startTest();
+		DonationRecordService.createOneTimeGift(person.Id, camp.Id, 'testStripeId', 'Ticket');
+		Test.stopTest();
+
+		// * Asserts
+		List<GiftTransaction> gifts = [SELECT Id FROM GiftTransaction];
+		Assert.areEqual(1, gifts.size(), 'No gifts created');
+	}
+
+	@isTest
+	private static void createRecurringTicketPaymentTest() {
+		// * Test data setup
+		makeRecordData();
+		makeCheckoutData(new StripeTestDataFactory(camp.Id, null).recurringTicketPurchase());
+
+		// * Actual test
+		DonationRecordService donationService = new DonationRecordService();
+		donationService.createRecurringGift(person.Id, camp.Id, stripePayload, 6, 'Ticket');
+
+		// * Asserts
+		List<GiftCommitment> giftCommitment = [SELECT Id FROM GiftCommitment];
+		List<GiftCommitmentSchedule> giftCommitmentSchedule = [SELECT Id, EndDate FROM GiftCommitmentSchedule];
+		List<GiftTransaction> giftTransaction = [SELECT Id FROM GiftTransaction];
+		Assert.areEqual(1, giftCommitment.size(), 'No gift commitment created.');
+		Assert.areEqual(
+			Date.today().addMonths(6),
+			giftCommitmentSchedule[0].EndDate,
+			'End date not set on commitment schedule.'
+		);
+		Assert.areEqual(1, giftTransaction.size(), 'No gift transaction created.');
+	}
+
+	@isTest
+	private static void createZeroDollarTicketTest() {
+		// * Test data setup
+		makeRecordData();
+
+		// * Actual test
+		DonationRecordService donationService = new DonationRecordService();
+		donationService.createZeroDollarTicket(person.Id, camp.Id, 1);
+
+		// * Asserts
+		List<GiftTransaction> giftTransaction = [SELECT Id FROM GiftTransaction];
+		Assert.areEqual(1, giftTransaction.size(), 'No gift transaction created.');
+	}
+
+	@isTest
+	private static void handleIncomingTicketInvoiceTest() {
+		// * Test data setup
+		makeRecordData();
+		makeCheckoutData(new StripeTestDataFactory(camp.Id, null).recurringTicketPurchase());
+		makeInvoiceData(new StripeTestDataFactory().invoiceTicket());
+
+		// * Actual test
+		DonationRecordService donationService = new DonationRecordService();
+		donationService.createRecurringGift(person.Id, camp.Id, stripePayload, 6, 'Ticket');
+
+		donationService.handleIncomingInvoice(
+			stripeInvoicePayload,
+			stripeInvoicePayload.data.objectz.subscription_details.metadata
+		);
+
+		// * Asserts
+		List<GiftTransaction> giftTransaction = [SELECT Id FROM GiftTransaction];
+		Assert.areEqual(3, giftTransaction.size(), 'No gift transaction created.');
 	}
 }
