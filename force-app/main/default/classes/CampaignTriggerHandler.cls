@@ -14,10 +14,7 @@ public with sharing class CampaignTriggerHandler extends TriggerHandler {
 	public static Boolean triggerExecuting = false;
 
 	public override void afterInsert() {
-		if (!triggerExecuting) {
-			// triggerExecuting = true;
-			CampaignService.generateDonationUrl(newList);
-		}
+		CampaignService.generateDonationUrl(newList, null);
 	}
 
 	public override void afterUpdate() {

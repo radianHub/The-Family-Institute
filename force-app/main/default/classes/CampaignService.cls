@@ -3,7 +3,7 @@
  * @Class Purpose  : Handles all database logic for Campaign records.
  * @Author         : Zachary Csotya
  * @Developed On   : 01/13/2025
- * @Last Modified  : 01/13/2025
+ * @Last Modified  : 03/25/2025
  **/
 public without sharing class CampaignService {
 	/**
@@ -56,17 +56,24 @@ public without sharing class CampaignService {
 	 * @author Zachary Csotya | 01/13/2025
 	 * @param List<Campaign> campaigns
 	 **/
-	public static void generateDonationUrl(List<Campaign> campaigns) {
+	public static void generateDonationUrl(List<Campaign> campaigns, Map<Id, Campaign> oldCampaigns) {
 		Set<Campaign> campaignsToUpdate = new Set<Campaign>();
-		String baseUrl = StripeIntegrationHelper.getCommunityBaseUrl('Donation1', 'donate');
+		String donationUrl = StripeIntegrationHelper.getCommunityBaseUrl('Donation1', 'donate');
+		String ticketUrl = StripeIntegrationHelper.getCommunityBaseUrl('Donation1', 'ticket');
 
 		for (Campaign camp : campaigns) {
-			if (String.isNotBlank(camp.DonationUrl__c)) {
-				continue;
+			String baseUrl = camp.Type == 'Event' ? ticketUrl : donationUrl;
+			if (oldCampaigns == null) {
+				campaignsToUpdate.add(new Campaign(Id = camp.Id, DonationUrl__c = baseUrl + '?campaign=' + camp.Id));
+			} else {
+				Campaign oldCamp = oldCampaigns.get(camp.Id);
+				if (oldCamp.Type == camp.Type && String.isNotBlank(camp.DonationUrl__c)) {
+					return;
+				}
+				camp.DonationUrl__c = baseUrl + '?campaign=' + camp.Id;
 			}
 			campaignsToUpdate.add(new Campaign(Id = camp.Id, DonationUrl__c = baseUrl + '?campaign=' + camp.Id));
 		}
-
 		update new List<Campaign>(campaignsToUpdate);
 	}
 }
