@@ -1,0 +1,174 @@
+<!-- sldsValidatorIgnore -->
+<template>
+	<div
+		class="spinner"
+		lwc:if={loading}>
+		<lightning-spinner
+			alternative-text="Loading"
+			size="x-large"
+			variant="base"></lightning-spinner>
+	</div>
+	<div lwc:else>
+		<lightning-layout horizontal-align="center">
+			<lightning-layout-item>
+				<div class="container">
+					<div
+						class="header"
+						style={customHeaderColor}>
+						<p
+							class="slds-text-heading_medium slds-text-align_center"
+							style={customTextColor}>
+							Registration Amount
+						</p>
+						<p
+							class="slds-text-heading_medium slds-text-align_center"
+							style={customTextColor}>
+							${total}
+						</p>
+					</div>
+					<div class="items">
+						<!-- * TICKET OPTIONS -->
+						<div
+							class="ticketGroup"
+							style="padding: 0.1em 0.5em">
+							<div class="ticketGroupType">
+								<div class="ticketType">
+									<div class="ticketDetails">
+										<div>{campaign.Name}</div>
+										<div>${campaign.EventAmount__c}</div>
+									</div>
+									<div class="ticketCount">
+										<lightning-combobox
+											name="progress"
+											value={ticketCount}
+											placeholder="0"
+											options={ticketCountOptions}
+											onchange={changeTicketCount}>
+										</lightning-combobox>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- * PAYMENT OPTIONS -->
+						<div
+							lwc:if={showPaymentsBtn}
+							class="payments">
+							<lightning-button-stateful
+								label-when-off="Make Payments?"
+								label-when-on="Making Payments"
+								icon-name-when-on="utility:check"
+								variant="brand"
+								selected={payments}
+								onclick={clickPaymentsButton}></lightning-button-stateful>
+						</div>
+						<!-- * DEMOGRAPHIC INFO -->
+						<div class="payerInfo">
+							<div class="col">
+								<lightning-input
+									type="text"
+									name="firstName"
+									label="First Name"
+									value={payerData.detail.firstName}
+									required
+									disabled={paymentLock}
+									onchange={changeDataInput}>
+								</lightning-input>
+								<lightning-input
+									type="text"
+									name="lastName"
+									label="Last Name"
+									value={payerData.detail.lastName}
+									required
+									disabled={paymentLock}
+									onchange={changeDataInput}>
+								</lightning-input>
+							</div>
+							<lightning-input
+								type="text"
+								name="street"
+								label="Address"
+								value={payerData.detail.street}
+								required
+								disabled={paymentLock}
+								onchange={changeDataInput}>
+							</lightning-input>
+							<lightning-input
+								type="text"
+								name="city"
+								label="City"
+								value={payerData.detail.city}
+								required
+								disabled={paymentLock}
+								onchange={changeDataInput}>
+							</lightning-input>
+							<div class="col">
+								<lightning-combobox
+									style="width: 13em"
+									name="state"
+									label="State"
+									value={payerData.detail.state}
+									options={stateOptions}
+									required
+									disabled={paymentLock}
+									onchange={changeDataInput}>
+								</lightning-combobox>
+								<lightning-input
+									type="text"
+									name="zip"
+									label="Zip Code"
+									value={payerData.detail.zip}
+									pattern="[0-9]{5}(?:[\-\s][0-9]{4})?"
+									message-when-pattern-mismatch="Please provide a valid zip code. XXXXX or XXXXX-XXXX"
+									max-length="10"
+									required
+									disabled={paymentLock}
+									onchange={changeDataInput}>
+								</lightning-input>
+							</div>
+							<lightning-input
+								type="email"
+								name="email"
+								label="Email Address"
+								value={payerData.detail.email}
+								placeholder="example@gmail.com"
+								required
+								disabled={paymentLock}
+								onchange={changeDataInput}>
+							</lightning-input>
+							<lightning-input
+								type="tel"
+								name="phone"
+								label="Phone Number"
+								value={payerData.detail.phone}
+								placeholder="XXX-XXX-XXXX"
+								pattern="^(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.\-]?\d{3}[\s.\-]?\d{4}$"
+								message-when-pattern-mismatch="Please provide a valid phone number."
+								required
+								disabled={paymentLock}
+								onchange={changeDataInput}>
+							</lightning-input>
+						</div>
+					</div>
+					<!-- * TOTAL OPTIONS -->
+					<template lwc:if={selectedDonation}>
+						<div class="fee">
+							<div>{displayTotal}</div>
+						</div>
+					</template>
+					<!-- * PAY BUTTONS -->
+					<div class="detailsBtn">
+						<lightning-button
+							variant="brand"
+							label="Pay Now"
+							title="donate"
+							icon-name="utility:currency"
+							icon-position="right"
+							disabled={lockPayBtn}
+							onclick={clickDonateBtn}>
+						</lightning-button>
+					</div>
+				</div>
+			</lightning-layout-item>
+		</lightning-layout>
+	</div>
+</template>

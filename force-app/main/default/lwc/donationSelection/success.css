@@ -1,0 +1,22 @@
+.container {
+	display: flex;
+	justify-content: center;
+	padding: 2em 0em;
+}
+
+.successMessage {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	border: 1px solid #b2b2b2;
+	padding: 15px;
+}
+
+h2 {
+	font-size: larger;
+}
+
+h1 {
+	font-size: x-large;
+	color: #06a59a;
+}
