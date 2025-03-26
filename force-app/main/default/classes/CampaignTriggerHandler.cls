@@ -13,7 +13,7 @@ public with sharing class CampaignTriggerHandler extends TriggerHandler {
 
 	public static Boolean triggerExecuting = false;
 
-	public override void beforeInsert() {
+	public override void afterInsert() {
 		CampaignService.generateDonationUrl(newList, null);
 	}
 
