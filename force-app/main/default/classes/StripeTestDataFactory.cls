@@ -1223,7 +1223,7 @@ public class StripeTestDataFactory {
 				'      "livemode": false,' +
 				'      "locale": null,' +
 				'      "metadata": {' +
-				'        "payer": "{\\"firstName\\":\\"Josiah\\",\\"lastName\\":\\"Fleming\\",\\"street\\":\\"Stacy Mcgowan\\",\\"city\\":\\"Knox Gates\\",\\"state\\":\\"Arizona\\",\\"zip\\":\\"12345\\",\\"email\\":\\"babyt@mailinator.com\\",\\"phone\\":\\"+1 (549) 224-6009\\"}",' +
+				'        "payer": "{\\"firstName\\":\\"Josiah\\",\\"lastName\\":\\"Fleming\\",\\"street\\":\\"Stacy Mcgowan\\",\\"city\\":\\"Knox Gates\\",\\"state\\":\\"Arizona\\",\\"zip\\":\\"12345\\",\\"email\\":\\"babyt@mailinator.com\\",\\"phone\\":\\"+1 (549) 224-6009\\",\\"title\\":\\"test\\",\\"organization\\":\\"testOrg\\"}",' +
 				'        "campaignId": ' +
 				campaignId +
 				',' +
