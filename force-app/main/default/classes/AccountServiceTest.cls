@@ -98,13 +98,15 @@ private class AccountServiceTest {
 		payer.city = 'San Francisco';
 		payer.state = 'CA';
 		payer.zip = '94104';
+		payer.title = 'test';
+		payer.organization = 'testOrg';
 
 		// * Actual test
 		AccountService accService = new AccountService();
 		accService.getOrCreatePersonAccount(payer);
 
 		// * Asserts
-		List<Account> acc = [SELECT Id FROM Account];
+		List<Account> acc = [SELECT Id FROM Account WHERE RecordType.Name != 'Organization'];
 		Assert.areEqual(acc.size(), 1, 'No account created');
 	}
 

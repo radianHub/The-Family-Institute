@@ -344,6 +344,8 @@ public class StripeResponse {
 	public class cls_payer {
 		public String firstName;
 		public String lastName;
+		public String organization;
+		public String title;
 		public String email;
 		public String phone;
 		public String street;
