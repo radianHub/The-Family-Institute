@@ -38,6 +38,8 @@ export default class DonationSelection extends LightningElement {
 		detail: {
 			firstName: '',
 			lastName: '',
+			title: '',
+			organization: '',
 			street: '',
 			city: '',
 			state: '',
@@ -137,7 +139,11 @@ export default class DonationSelection extends LightningElement {
 	@wire(getCampaign, { campaignId: '$campaignId' })
 	wiredCampaign({ error, data }) {
 		if (data) {
-			this.campaign = data;
+			let clonedData = JSON.parse(JSON.stringify(data));
+			if (clonedData?.EventAmount__c == null) {
+				clonedData.EventAmount__c = 0;
+			}
+			this.campaign = clonedData;
 		} else if (error) {
 			console.log(error);
 		}

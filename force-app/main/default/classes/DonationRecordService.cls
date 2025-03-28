@@ -3,7 +3,7 @@
  * @Class Purpose  : Handles database logic for all objects related to donations.
  * @Author         : Zachary Csotya
  * @Developed On   : 01/10/2025
- * @Last Modified  : 03/21/2025
+ * @Last Modified  : 03/27/2025
  **/
 public without sharing class DonationRecordService {
 	/**
@@ -139,7 +139,7 @@ public without sharing class DonationRecordService {
 			gdId = [
 				SELECT GiftDesignationId
 				FROM GiftDefaultDesignation
-				WHERE ParentRecordId = :campaignId AND GiftDesignation.isDefault = TRUE
+				WHERE ParentRecordId = :campaignId
 				LIMIT 1
 			]
 			.GiftDesignationId;
@@ -220,7 +220,7 @@ public without sharing class DonationRecordService {
 				gdId = [
 					SELECT GiftDesignationId
 					FROM GiftDefaultDesignation
-					WHERE ParentRecordId = :campaignId AND GiftDesignation.isDefault = TRUE
+					WHERE ParentRecordId = :campaignId
 					LIMIT 1
 				]
 				.GiftDesignationId;
@@ -465,7 +465,7 @@ public without sharing class DonationRecordService {
 			gdId = [
 				SELECT GiftDesignationId
 				FROM GiftDefaultDesignation
-				WHERE ParentRecordId = :campaignId AND GiftDesignation.isDefault = TRUE
+				WHERE ParentRecordId = :campaignId
 				LIMIT 1
 			]
 			.GiftDesignationId;
