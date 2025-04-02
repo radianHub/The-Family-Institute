@@ -132,6 +132,13 @@
                 <elementReference>$Record.BestGiftYear</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Donor.LastCampaign__pc</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.LastCampaign__c</elementReference>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>Update_Donor</targetReference>
         </connector>
