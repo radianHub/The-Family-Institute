@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Add_payment_length_for_payments</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+AllowPayments__c,
+ISBLANK(MaxPaymentLength__c)
+)</errorConditionFormula>
+    <errorDisplayField>MaxPaymentLength__c</errorDisplayField>
+    <errorMessage>To allow payments you must provide a max payment length</errorMessage>
+</ValidationRule>

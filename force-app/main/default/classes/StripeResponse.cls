@@ -218,6 +218,9 @@ public class StripeResponse {
 		public String tributeType;
 		public Integer intervalCount;
 		public String giftType;
+		public String type;
+		public String payer;
+		public Integer paymentLength;
 	}
 	public class cls_rendering_options {
 		public String amount_tax_display;
@@ -336,5 +339,22 @@ public class StripeResponse {
 
 	public class EmployerData {
 		public String employerName;
+	}
+
+	public class cls_payer {
+		public String firstName;
+		public String lastName;
+		public String organization;
+		public String title;
+		public String email;
+		public String phone;
+		public String street;
+		public String city;
+		public String state;
+		public String zip;
+
+		public cls_payer parse(String json) {
+			return (cls_payer) System.JSON.deserialize(json, cls_payer.class);
+		}
 	}
 }

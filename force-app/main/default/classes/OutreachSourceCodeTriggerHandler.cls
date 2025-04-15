@@ -13,17 +13,11 @@ public with sharing class OutreachSourceCodeTriggerHandler extends TriggerHandle
 
 	public static Boolean triggerExecuting = false;
 
-	public override void afterInsert() {
-		if (!triggerExecuting) {
-			// triggerExecuting = true;
-			OutreachSourceCodeService.generateDonationUrl(newList);
-		}
+	public override void beforeInsert() {
+		OutreachSourceCodeService.generateDonationUrl(newList);
 	}
 
-	public override void afterUpdate() {
-		if (!triggerExecuting) {
-			triggerExecuting = true;
-			OutreachSourceCodeService.generateDonationUrl(newList);
-		}
+	public override void beforeUpdate() {
+		OutreachSourceCodeService.generateDonationUrl(newList);
 	}
 }
