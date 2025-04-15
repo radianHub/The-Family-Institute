@@ -3,7 +3,7 @@
  * @Class Purpose  : Provides helper methods for Stripe integration.
  * @Author         : Zachary Csotya
  * @Developed On   : 01/13/2025
- * @Last Modified  : 01/13/2025
+ * @Last Modified  : 03/12/2025
  **/
 public without sharing class StripeIntegrationHelper {
 	/**
@@ -107,5 +107,46 @@ public without sharing class StripeIntegrationHelper {
 			throw new DonationProcessingException('No Site record found.');
 		}
 		return [SELECT SecureURL FROM SiteDetail WHERE DurableId = :site.Id].SecureUrl + page;
+	}
+
+	/**
+	 * @description Makes a callout to stripe to get checkout session line items
+	 * @author Zachary Csotya | 03/12/2025
+	 * @param String sessionId
+	 * @return StripeIntegrationHelper.SessionLineItem
+	 **/
+	public static StripeIntegrationHelper.SessionLineItem getSessionLineItems(String sessionId) {
+		Donation_Component__c donationSettings = Donation_Component__c.getOrgDefaults();
+
+		HttpRequest req = new HttpRequest();
+		req.setEndpoint(donationSettings.Endpoint__c + '/v1/checkout/sessions/' + sessionId + '/line_items');
+		req.setHeader('Authorization', 'Bearer ' + donationSettings.Stripe_API_Key__c);
+		req.setMethod('GET');
+		HttpResponse res = new Http().send(req);
+
+		String resBody = res.getBody().toString().replaceAll('object', 'objectz');
+		resBody = resBody.replaceAll('currency', 'currencyz');
+
+		return (SessionLineItem) System.JSON.deserialize(resBody, SessionLineItem.class);
+	}
+
+	public class SessionLineItem {
+		public String objectz;
+		public List<LineItemData> data;
+		public Boolean has_more;
+		public String url;
+	}
+
+	public class LineItemData {
+		public String id;
+		public String objectz;
+		public Integer amount_discount;
+		public Integer amount_subtotal;
+		public Integer amount_tax;
+		public Integer amount_total;
+		public String currencyz;
+		public String description;
+		public StripeInvoiceResponse.cls_price price;
+		public Integer quantity;
 	}
 }

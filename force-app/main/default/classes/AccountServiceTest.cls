@@ -19,6 +19,8 @@ private class AccountServiceTest {
 	}
 
 	// # UNIT TESTS
+
+	// * DONOR PERSON TESTS
 	@isTest
 	private static void getOrCreatePersonAccountTest() {
 		// * Test data setup
@@ -52,10 +54,11 @@ private class AccountServiceTest {
 	@isTest
 	private static void nullCustomerDetailsTest() {
 		// * Test data setup
+		StripeResponse.cls_customer_details customerDetails = null;
 
 		// * Actual test
 		try {
-			accService.getOrCreatePersonAccount(null);
+			accService.getOrCreatePersonAccount(customerDetails);
 		} catch (Exception ex) {
 			exMsg = ex.getMessage();
 		}
@@ -82,6 +85,68 @@ private class AccountServiceTest {
 		Assert.areEqual('Customer details or email is null', exMsg, 'message');
 	}
 
+	// * TICKETING PERSON TESTS
+	@isTest
+	private static void getOrCreatePersonTicketPurchaseTest() {
+		// * Test data setup
+		StripeResponse.cls_payer payer = new StripeResponse.cls_payer();
+		payer.firstName = 'Testy';
+		payer.lastName = 'Tester';
+		payer.email = 'test@test.com';
+		payer.phone = '1234567891';
+		payer.street = '123 Market St';
+		payer.city = 'San Francisco';
+		payer.state = 'CA';
+		payer.zip = '94104';
+		payer.title = 'test';
+		payer.organization = 'testOrg';
+
+		// * Actual test
+		AccountService accService = new AccountService();
+		accService.getOrCreatePersonAccount(payer);
+
+		// * Asserts
+		List<Account> acc = [SELECT Id FROM Account WHERE RecordType.Name != 'Organization'];
+		Assert.areEqual(acc.size(), 1, 'No account created');
+	}
+
+	@isTest
+	private static void nullPayerEmailTest() {
+		// * Test data setup
+		StripeResponse.cls_payer payer = new StripeResponse.cls_payer();
+
+		// * Actual test
+		String exMsg;
+		try {
+			AccountService accService = new AccountService();
+			accService.getOrCreatePersonAccount(payer);
+		} catch (Exception ex) {
+			exMsg = ex.getMessage();
+		}
+
+		// * Asserts
+		Assert.isNotNull(exMsg, 'No exception thrown for empty email.');
+	}
+
+	@isTest
+	private static void nullPayerTest() {
+		// * Test data setup
+		StripeResponse.cls_payer payer = null;
+
+		// * Actual test
+		String exMsg;
+		try {
+			AccountService accService = new AccountService();
+			accService.getOrCreatePersonAccount(payer);
+		} catch (Exception ex) {
+			exMsg = ex.getMessage();
+		}
+
+		// * Asserts
+		Assert.isNotNull(exMsg, 'No exception thrown for empty payer.');
+	}
+
+	// * DONOR ORGANIZATION TESTS
 	@isTest
 	private static void getOrCreateOrgAccountTest() {
 		// * Test data setup

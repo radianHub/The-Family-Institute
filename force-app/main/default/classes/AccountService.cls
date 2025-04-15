@@ -3,7 +3,7 @@
  * @Class Purpose  : Handles all database logic for Account records.
  * @Author         : Zachary Csotya
  * @Developed On   : 12/31/2024
- * @Last Modified  : 12/31/2024
+ * @Last Modified  : 03/27/2025
  **/
 public without sharing class AccountService {
 	final static Id PERSON_ACCT_RT = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName()
@@ -59,11 +59,80 @@ public without sharing class AccountService {
 					customerDetails.address.state,
 					customerDetails.address.postal_code,
 					customerDetails.address.country,
-					'Donor'
+					'Donor',
+					null
 				),
 				true
 			);
 		}
+	}
+
+	/**
+	 * @description Retrieves the id of the person account by given email, if person not found creates a new person account record.
+	 * @author Zachary Csotya | 03/12/2025
+	 * @param StripeResponse.cls_payer payerDetails
+	 * @return Id
+	 **/
+	public Id getOrCreatePersonAccount(StripeResponse.cls_payer payerDetails) {
+		if (payerDetails == null || String.isBlank(payerDetails.email)) {
+			throw new DonationProcessingException('Customer details or email is null');
+		}
+
+		String accId;
+		try {
+			// * Query for existing account by email
+			accId = [SELECT Id, Name FROM Account WHERE PersonEmail = :payerDetails.email LIMIT 1].Id;
+		} catch (Exception ex) {
+			System.debug('No existing account found, creating new.');
+
+			// * Create new person account
+			accId = parseRecordData(
+				new AccountData(
+					payerDetails.firstName,
+					payerDetails.lastName,
+					payerDetails.email,
+					String.isNotBlank(payerDetails.phone) ? payerDetails.phone.removeStart('+1') : null,
+					payerDetails.street,
+					payerDetails.city,
+					payerDetails.state,
+					payerDetails.zip,
+					null,
+					'Donor',
+					payerDetails.title
+				),
+				true
+			);
+		}
+
+		if (payerDetails?.organization != null) {
+			// * Query existing org if none exist create new account
+			String orgId;
+			try {
+				orgId = [SELECT Id FROM Account WHERE Name = :payerDetails.organization LIMIT 1].Id;
+			} catch (Exception ex) {
+				Account orgAcc = new Account(Name = payerDetails.organization);
+				insert orgAcc;
+				orgId = orgAcc.Id;
+			}
+
+			// * Query for existing account contact relation, if none exist create new
+			try {
+				AccountContactRelation acr = [
+					SELECT Id
+					FROM AccountContactRelation
+					WHERE AccountId = :orgId AND ContactId = :accId
+					LIMIT 1
+				];
+			} catch (Exception ex) {
+				AccountContactRelation acr = new AccountContactRelation(
+					AccountId = orgId,
+					ContactId = [SELECT Id FROM Contact WHERE AccountId = :accId]
+					.Id
+				);
+				insert acr;
+			}
+		}
+		return accId;
 	}
 
 	/**
@@ -100,7 +169,8 @@ public without sharing class AccountService {
 					org.orgInfo.State,
 					org.orgInfo.Zip,
 					null,
-					'Other'
+					'Other',
+					null
 				),
 				false
 			);
@@ -232,7 +302,8 @@ public without sharing class AccountService {
 				PersonMailingCountry = data.country,
 				PersonMailingPostalCode = data.zip,
 				PersonMailingState = data.state,
-				PersonMailingStreet = data.street
+				PersonMailingStreet = data.street,
+				PersonTitle = data.title
 			);
 		} else {
 			newAcc = new Account(
@@ -278,6 +349,7 @@ public without sharing class AccountService {
 		String zip;
 		String country;
 		String accType;
+		String title;
 
 		private AccountData(
 			String firstName,
@@ -289,7 +361,8 @@ public without sharing class AccountService {
 			String state,
 			String zip,
 			String country,
-			String accType
+			String accType,
+			String title
 		) {
 			this.fName = firstName;
 			this.lName = lastName;
@@ -301,6 +374,7 @@ public without sharing class AccountService {
 			this.zip = zip;
 			this.country = country;
 			this.accType = accType;
+			this.title = title;
 		}
 	}
 }
